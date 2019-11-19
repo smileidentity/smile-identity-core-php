@@ -1,0 +1,8 @@
+{
+  "name": "smile-identity/smile-identity-core",
+  "type": "library",
+  "description": "The Official Smile Identity PHP library",
+  "require": {
+    "maennchen/zipstream-php": "^1.2"
+  }
+}
