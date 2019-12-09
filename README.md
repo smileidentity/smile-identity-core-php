@@ -7,5 +7,7 @@ Download smile-identity-core-php repo to a directory on your server where PHP an
 
 In that directory run `composer install`
 
+*Usage*
+
 Edit the example.php file and replace sections marked with <>
 
