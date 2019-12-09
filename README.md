@@ -9,5 +9,5 @@ In that directory run `composer install`
 
 *Usage*
 
-Edit the example.php file and replace sections marked with <>
+Edit the example_core.php file and replace sections marked with <>
 
