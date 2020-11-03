@@ -92,4 +92,55 @@ $id_info = array(
 $result = $sid_core->submit_job($partner_params, $image_details, $id_info, $options);
 
 
+//-------------------------------------------------------------------------------------------------------------
+// Smile ID ID Verification API usage
+//
+
+$sid_idapi = new sid\IdApi;
+
+// If use_async is false $result contains the returned ID information
+// If true then the ID information will be sent to the callback specified - >> RECOMENDED <<
+$use_async =  false;
+
+// One time initialize call to setup required
+$sid_core->initialize($partner_id,
+    $default_callback, // Used if $use_async is true otherwise should be ""
+    $api_key,
+    $sid_server
+);
+
+// Create required tracking parameters
+// Every communication between your server and the Smile Identity servers contain these parameters.
+// Use them to match up the job results with the job and user you submitted.
+$partner_params = array(
+    // String containing a unique job ID for this job. You can place your own here or use uniqid or any other UUID generator.
+    'job_id' => '<put your unique ID for the user here>',
+    // String containing a unique user ID for this job. You can place your own here or use uniqid or any other UUID generator.
+    'user_id' => '<put unique job ID here',
+    // Job Type Integer
+    'job_type' => 5,
+     // You can add as many key value pairs as you line but all MUST be strings.
+    'optional_info' => 'PHP Test Data'
+    );
+
+// Create ID number info
+// Only required fields need to be filled in. The rest should be blank strings
+// Set 'entered' to 'false' if no issuer lookup is needed
+$id_info = array(
+    'first_name' => '<name>',
+    'middle_name' => '<middle>',
+    'last_name' => '<surname>',
+    'country' => '<country code>',
+    'id_type' => '<id type>',
+    'id_number' => '<valid id number>', // Always required
+    'dob' => '<DOB in ISO 8601 format>', // yyyy-mm-dd
+    'entered' => '<true | false>' // MUST BE A STRING
+    );
+
+
+// 
+$result = $sid_idapi->submit_job($partner_params, $id_info, $use_async);
+
+
+
 ?>
