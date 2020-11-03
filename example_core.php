@@ -103,7 +103,7 @@ $sid_idapi = new sid\IdApi;
 $use_async =  false;
 
 // One time initialize call to setup required
-$sid_core->initialize($partner_id,
+$sid_idapi->initialize($partner_id,
     $default_callback, // Used if $use_async is true otherwise should be ""
     $api_key,
     $sid_server
@@ -138,7 +138,7 @@ $id_info = array(
     );
 
 
-// 
+//
 $result = $sid_idapi->submit_job($partner_params, $id_info, $use_async);
 
 
