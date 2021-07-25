@@ -7,10 +7,10 @@ class Signature
     private $api_key;
     private $partner_id;
 
-    function initialize($i_partner_id, $i_api_key)
+    function __construct($api_key, $partner_id)
     {
-        $this->api_key = $i_api_key;
-        $this->partner_id = $i_partner_id;
+        $this->api_key = $api_key;
+        $this->partner_id = $partner_id;   
     }
 
     function generate_sec_key()

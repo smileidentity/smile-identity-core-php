@@ -25,8 +25,7 @@ class SmileIdentityCore
     {
         $this->partner_id = $i_partner_id;
         $this->default_callback = $i_default_callback;
-        $this->sig_class = new Signature;
-        $this->sig_class->initialize($i_partner_id, $i_api_key);
+        $this->sig_class = new Signature($i_partner_id, $i_api_key);
         if(strlen($i_sid_server) == 1)
             if(intval($i_sid_server) < 2)
                 $this->sid_server = SID_SERVERS[intval($i_sid_server)];
