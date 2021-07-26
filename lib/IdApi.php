@@ -15,8 +15,7 @@ class IdApi
     private $sid_server;
     private $js_timeout = DEFAULT_JOB_STATUS_TIMEOUT;
 
-
-    public function initialize($i_partner_id, $i_default_callback, $i_api_key, $i_sid_server)
+    public function __construct($i_partner_id, $i_default_callback, $i_api_key, $i_sid_server)
     {
         $this->partner_id = $i_partner_id;
         $this->default_callback = $i_default_callback;
@@ -29,7 +28,6 @@ class IdApi
         else
             $this->sid_server = $i_sid_server;
     }
-
 
     public function submit_job($partner_params, $id_info, $use_async)
     {
@@ -65,9 +63,7 @@ class IdApi
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true );
         $response = curl_exec($ch);
         curl_close($ch);
-        $result = json_decode($response);
-
-        return $result;
+        return json_decode($response);
 
     }
 }

@@ -61,7 +61,7 @@ $selfie_image_detail = array(
     'image_type_id' => 0, // Selfie image jpg or png
     'image' => $selfie_filename
     );
-// ID card image can be ommited if selfie comparison to issuer image is desired
+// ID card image can be omitted if selfie comparison to issuer image is desired
 $id_card_image_detail = array(
     'image_type_id' => 1, // ID card image jpg or png
     'image' => $id_card_filename
@@ -94,18 +94,16 @@ $result = $sid_core->submit_job($partner_params, $image_details, $id_info, $opti
 // Smile ID ID Verification API usage
 //
 
-$sid_idapi = new sid\IdApi;
-
-// If use_async is false $result contains the returned ID information
-// If true then the ID information will be sent to the callback specified - >> RECOMENDED <<
-$use_async =  false;
-
-// One time initialize call to setup required
-$sid_idapi->initialize($partner_id,
+$sid_idapi = new sid\IdApi(
+    $partner_id,
     $default_callback, // Used if $use_async is true otherwise should be ""
     $api_key,
     $sid_server
 );
+
+// If use_async is false $result contains the returned ID information
+// If true then the ID information will be sent to the callback specified - >> RECOMMENDED <<
+$use_async =  false;
 
 // Create required tracking parameters
 // Every communication between your server and the Smile Identity servers contain these parameters.

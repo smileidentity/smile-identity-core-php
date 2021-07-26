@@ -68,8 +68,7 @@ class SmileIdentityCore
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true );
         $prep_upload_response = curl_exec($ch);
         curl_close($ch);
-        $result = json_decode($prep_upload_response);
-        return $result;
+        return json_decode($prep_upload_response);
     }
 
     private function upload_file($upload_url, $filename)
