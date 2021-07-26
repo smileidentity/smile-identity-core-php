@@ -4,7 +4,12 @@
 require 'vendor/autoload.php';
 include 'SmileIdentityCore.php';
 
-$sid_core = new sid\SmileIdentityCore;
+$sid_core = new sid\SmileIdentityCore(
+    $partner_id,
+    $default_callback,
+    $api_key,
+    $sid_server
+);
 
 $partner_id = '<Put your 3 digit partner ID here>';
 $default_callback = '<Put your default callback url here>';
@@ -13,13 +18,6 @@ $default_callback = '<Put your default callback url here>';
 $api_key = '<Put your base64 encoded API key here>';
 // Use '0' for the sandbox (test) server, use '1' for production server
 $sid_server = '0';
-
-// One time initialize call to setup required
-$sid_core->initialize($partner_id,
-    $default_callback,
-    $api_key,
-    $sid_server
-);
 
 // Create required tracking parameters
 // Every communication between your server and the Smile Identity servers contain these parameters.

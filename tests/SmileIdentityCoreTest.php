@@ -10,8 +10,7 @@ final class SmileIdentityCoreTest extends TestCase
 {
     public function testInitialize(): void
     {
-        $sic = new SmileIdentityCore;
-        $sic->initialize(1234, 2345, 5678, 1);
+        $sic = new SmileIdentityCore(1234, 2345, 5678, 1);
         $this->assertSame(1, count(get_object_vars($sic)));
     }
 }

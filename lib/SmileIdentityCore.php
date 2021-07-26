@@ -21,7 +21,7 @@ class SmileIdentityCore
         return VERSION;
     }
 
-    public function initialize($i_partner_id, $i_default_callback, $i_api_key, $i_sid_server)
+    public function __construct($i_partner_id, $i_default_callback, $i_api_key, $i_sid_server)
     {
         $this->partner_id = $i_partner_id;
         $this->default_callback = $i_default_callback;
@@ -33,7 +33,6 @@ class SmileIdentityCore
                 throw new Exception("Invalid server selected");
         else
             $this->sid_server = $i_sid_server;
-
     }
 
     public function generate_sec_key()
