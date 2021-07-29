@@ -2,44 +2,62 @@
 namespace sid;
 
 require 'config.php';
+require 'signature.php';
 require 'vendor/autoload.php';
+
+use phpDocumentor\Reflection\Types\Integer;
 use ZipStream\Option\Archive as ArchiveOptions;
 use Exception;
 
 class SmileIdentityCore
 {
 
-    public $sig_class;
-    private $partner_id;
-    private $default_callback;
-    private $sid_server;
-    private $js_timeout = DEFAULT_JOB_STATUS_TIMEOUT;
+    public Signature $sig_class;
+    private String $partner_id;
+    private String $default_callback;
+    private String $sid_server;
 
-
-    public function get_version()
+    /**
+     * SmileIdentityCore constructor.
+     * @param $partner_id
+     * @param $default_callback
+     * @param $api_key
+     * @param $sid_server
+     * @throws Exception
+     */
+    public function __construct($partner_id, $default_callback, $api_key, $sid_server)
     {
-        return VERSION;
-    }
-
-    public function __construct($i_partner_id, $i_default_callback, $i_api_key, $i_sid_server)
-    {
-        $this->partner_id = $i_partner_id;
-        $this->default_callback = $i_default_callback;
-        $this->sig_class = new Signature($i_partner_id, $i_api_key);
-        if(strlen($i_sid_server) == 1)
-            if(intval($i_sid_server) < 2)
-                $this->sid_server = SID_SERVERS[intval($i_sid_server)];
-            else
+        $this->partner_id = $partner_id;
+        $this->default_callback = $default_callback;
+        $this->sig_class = new Signature($api_key, $partner_id);
+        if(strlen($sid_server) == 1) {
+            if(intval($sid_server) < 2) {
+                $this->sid_server = SID_SERVERS[intval($sid_server)];
+            } else {
                 throw new Exception("Invalid server selected");
-        else
-            $this->sid_server = $i_sid_server;
+            }
+        } else {
+            $this->sid_server = $sid_server;
+        }
     }
 
-    public function generate_sec_key()
+    /**
+     * @param $timestamp
+     * @return array
+     */
+    public function generate_sec_key(): array
     {
         return $this->sig_class->generate_sec_key();
     }
 
+    /**
+     * @param $sec_key
+     * @param $timestamp
+     * @param $partner_params
+     * @param $filename
+     * @param $options
+     * @return mixed
+     */
     private function call_prep_upload($sec_key, $timestamp, $partner_params, $filename, $options)
     {
         if($options['optional_callback'] == null)
@@ -72,6 +90,11 @@ class SmileIdentityCore
         return $result;
     }
 
+    /**
+     * @param $upload_url
+     * @param $filename
+     * @return bool|string
+     */
     private function upload_file($upload_url, $filename)
     {
         $ch = curl_init($upload_url);
@@ -90,6 +113,12 @@ class SmileIdentityCore
         return $response;
     }
 
+    /**
+     * @param $upload_url
+     * @param $stream
+     * @param $file_len
+     * @return bool|string
+     */
     private function upload_stream($upload_url, $stream, $file_len)
     {
         $ch = curl_init($upload_url);
@@ -106,6 +135,12 @@ class SmileIdentityCore
         return $response;
     }
 
+    /**
+     * @param $filepath
+     * @param $partner_params
+     * @param $options
+     * @return array|bool|string
+     */
     public function submit_zip($filepath, $partner_params, $options)
     {
         $path_parts = pathinfo($filepath);
@@ -145,6 +180,11 @@ class SmileIdentityCore
         return $result;
     }
 
+    /**
+     * @param $partner_params
+     * @param $options
+     * @return mixed
+     */
     public function query_job_status($partner_params, $options)
     {
         $b = $this->sig_class->generate_sec_key();
@@ -176,6 +216,11 @@ class SmileIdentityCore
         return $response;
     }
 
+    /**
+     * @param $partner_params
+     * @param $options
+     * @return mixed
+     */
     public function get_job_status($partner_params, $options)
     {
         return $this->query_job_status($partner_params, $options);
@@ -205,6 +250,16 @@ class SmileIdentityCore
         return $images;
     }
 
+    /**
+     * @param $prep_upload_response_array
+     * @param $id_info
+     * @param $images
+     * @param $partner_params
+     * @param $sec_key
+     * @param $timestamp
+     * @param $options
+     * @return array
+     */
     private function configure_info_json($prep_upload_response_array, $id_info, $images, $partner_params, $sec_key, $timestamp, $options)
     {
 
@@ -249,6 +304,16 @@ class SmileIdentityCore
         return $info;
     }
 
+    /**
+     * @param $partner_params
+     * @param $image_details
+     * @param $id_info
+     * @param $options
+     * @return array|bool|string
+     * @throws \ZipStream\Exception\FileNotFoundException
+     * @throws \ZipStream\Exception\FileNotReadableException
+     * @throws \ZipStream\Exception\OverflowException
+     */
     public function submit_job($partner_params, $image_details, $id_info, $options)
     {
         $b = $this->sig_class->generate_sec_key();
