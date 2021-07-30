@@ -1,8 +1,6 @@
 <?php
 declare(strict_types=1);
 
-namespace sid;
-
 require 'lib/SmileIdentityCore.php';
 use PHPUnit\Framework\TestCase;
 use Ouzo\Utilities\Clock;
@@ -14,12 +12,16 @@ final class SmileIdentityCoreTest extends TestCase
     protected function setUp(): void
     {
         Clock::freeze('2011-01-02 12:34');
-        $this->sic = new SmileIdentityCore(1234, 2345, 5678, 1);
+        $sid_server = 1;
+        $partner_id = 212;
+        $default_callback = 'https://google.com';
+        $api_key = 'LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlHZk1BMEdDU3FHU0liM0RRRUJBUVVBQTRHTkFEQ0JpUUtCZ1FDWDY4TEh4U1NFRkVNSFpWRks1dXdCMzZJZQprUnp3YUpHUmxwTjFReVlpVk84bDlYZXk4WkVXWjhicStFOWFteU1id2k2Z1NsQmkvV0hRTUkxWU5VQ2g0VkVCClpMOVRwTjdJNE9wY1ZHUlVWbHErbFBUTGgyZ0MzWmp5SytUSERqd0taVEdLSnFmS0FPSSs4NWE5SHoyR2RDaWYKMWtneUZkNVJUL2lVQy8rSy93SURBUUFCCi0tLS0tRU5EIFBVQkxJQyBLRVktLS0tLQo=';
+        $this->sic = new SmileIdentityCore($partner_id, $default_callback, $api_key, $sid_server);
     }
 
     public function testInitialize(): void
     {
-        $this->assertInstanceOf('sid\SmileIdentityCore', $this->sic);
+        $this->assertInstanceOf('SmileIdentityCore', $this->sic);
     }
 
     public function testSubmitZip(): void
@@ -27,7 +29,7 @@ final class SmileIdentityCoreTest extends TestCase
 
     }
 
-    public function testGetJobStatus()
+    public function testGetJobStatus(): void
     {
 
     }

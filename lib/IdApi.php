@@ -1,11 +1,9 @@
 <?php
+spl_autoload_register(function($class) {
+    require_once($class.'.php');
+});
 
-namespace sid;
-
-require 'config.php';
-require 'Signature.php';
 require 'vendor/autoload.php';
-use Exception;
 
 class IdApi
 {

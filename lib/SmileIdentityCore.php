@@ -1,13 +1,15 @@
 <?php
-namespace sid;
+spl_autoload_register(function($class) {
+     require_once($class.'.php');
+});
 
-require 'config.php';
-require 'signature.php';
-require 'vendor/autoload.php';
-
-use phpDocumentor\Reflection\Types\Integer;
 use ZipStream\Option\Archive as ArchiveOptions;
-use Exception;
+
+const VERSION = '1.1.0';
+const SID_SERVERS = [
+    'https://3eydmgh10d.execute-api.us-west-2.amazonaws.com/test',
+    'https://la7am6gdm8.execute-api.us-west-2.amazonaws.com/prod'
+];
 
 class SmileIdentityCore
 {
@@ -39,6 +41,11 @@ class SmileIdentityCore
         } else {
             $this->sid_server = $sid_server;
         }
+    }
+
+    public function get_version()
+    {
+        return VERSION;
     }
 
     /**

@@ -1,6 +1,4 @@
 <?php
-namespace sid;
-use Exception;
 
 class Utilities {
     /**
