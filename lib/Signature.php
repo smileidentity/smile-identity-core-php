@@ -44,7 +44,7 @@ class Signature
      * @param string $sec_key
      * @return bool
      */
-    function confirm_sec_key(string $sec_key, $timestamp = null): bool
+    function confirm_sec_key($timestamp, string $sec_key): bool
     {
         $sec_key_exploded = explode("|", $sec_key);
         $encrypted = base64_decode($sec_key_exploded[0]);
@@ -71,7 +71,7 @@ class Signature
      * @param string $signature
      * @return bool
      */
-    function confirm_signature(string $signature, $timestamp): bool
+    function confirm_signature($timestamp, string $signature): bool
     {
         return $signature === $this->generate_signature($timestamp)[0];
     }

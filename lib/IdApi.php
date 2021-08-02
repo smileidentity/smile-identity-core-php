@@ -7,7 +7,10 @@ require 'vendor/autoload.php';
 
 class IdApi
 {
-
+    const SID_SERVERS = [
+        'https://3eydmgh10d.execute-api.us-west-2.amazonaws.com/test',
+        'https://la7am6gdm8.execute-api.us-west-2.amazonaws.com/prod'
+    ];
     public Signature $sig_class;
     private String $partner_id;
     private String $default_callback;
@@ -17,7 +20,7 @@ class IdApi
      * IdApi constructor.
      * @param $partner_id
      * @param $default_callback
-     * @param $api_key
+     * @param $api_key,
      * @param $sid_server
      * @throws Exception
      */
@@ -28,7 +31,7 @@ class IdApi
         $this->sig_class = new Signature($api_key, $partner_id);
         if(strlen($sid_server) == 1) {
             if(intval($sid_server) < 2) {
-                $this->sid_server = SID_SERVERS[intval($sid_server)];
+                $this->sid_server = self::SID_SERVERS[intval($sid_server)];
             } else {
                 throw new Exception("Invalid server selected");
             }
@@ -45,7 +48,7 @@ class IdApi
      */
     public function submit_job($partner_params, $id_info, $use_async)
     {
-        $b = $this->sig_class->generate_sec_key($timestamp = null);
+        $b = $this->sig_class->generate_sec_key();
         $sec_key = $b[0];
         $timestamp = $b[1];
         $response = false;
