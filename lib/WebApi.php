@@ -3,7 +3,9 @@ spl_autoload_register(function($class) {
      require_once($class.'.php');
 });
 
-use ZipStream\Option\Archive as ArchiveOptions;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
+use Psr\Http\Message\ResponseInterface;
 
 const VERSION = '1.1.0';
 const DEFAULT_JOB_STATUS_SLEEP = 2;
@@ -60,7 +62,8 @@ class WebApi
      * @param $filepath
      * @param $partner_params
      * @param $options
-     * @return array|bool|string
+     * @return array|bool
+     * @throws GuzzleException
      */
     public function submit_zip($filepath, $partner_params, $options)
     {
@@ -104,7 +107,8 @@ class WebApi
     /**
      * @param $partner_params
      * @param $options
-     * @return mixed
+     * @return ResponseInterface
+     * @throws GuzzleException
      */
     public function query_job_status($partner_params, $options)
     {
@@ -124,23 +128,23 @@ class WebApi
 
         $json_data = json_encode($data,JSON_PRETTY_PRINT);
 
-        $ch = curl_init($this->sid_server.'/job_status');
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $json_data );
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true );
-        $job_status_response = curl_exec($ch);
-        $response = json_decode($job_status_response, true);
-        curl_close($ch);
-        return $response;
+        $client = new Client([
+            'base_uri' => $this->sid_server,
+            'timeout'  => 5.0
+        ]);
+        return $client->post('/job_status',
+            [
+                'content-type' => 'application/json',
+                GuzzleHttp\RequestOptions::JSON => $json_data
+            ]
+        );
     }
 
     /**
      * @param $partner_params
      * @param $options
      * @return mixed
+     * @throws GuzzleException
      */
     public function get_job_status($partner_params, $options)
     {
@@ -177,14 +181,16 @@ class WebApi
      * @param $partner_params
      * @param $filename
      * @param $options
-     * @return mixed
+     * @return ResponseInterface
+     * @throws GuzzleException
      */
-    private function call_prep_upload($sec_key, $timestamp, $partner_params, $filename, $options)
+    private function call_prep_upload($sec_key, $timestamp, $partner_params, $filename, $options): ResponseInterface
     {
         if($options['optional_callback'] == null)
             $callback = $this->default_callback;
         else
             $callback = $options['optional_callback'];
+
         $data = array(
             'callback_url' => $callback,
             'file_name' => $filename,
@@ -197,62 +203,33 @@ class WebApi
 
         $json_data = json_encode($data,JSON_PRETTY_PRINT);
 
-        $ch = curl_init($this->sid_server.'/upload');
-        # Setup request to send json via POST.
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $json_data );
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true );
-        $prep_upload_response = curl_exec($ch);
-        curl_close($ch);
-        $result = json_decode($prep_upload_response);
-        return $result;
+
+        $client = new Client([
+            'base_uri' => $this->sid_server,
+            'timeout'  => 5.0
+        ]);
+        return $client->post('/upload',
+            [
+                'content-type' => 'application/json',
+                'body' => $json_data
+            ]
+        );
     }
 
     /**
      * @param $upload_url
      * @param $filename
-     * @return bool|string
+     * @return ResponseInterface
+     * @throws GuzzleException
      */
-    private function upload_file($upload_url, $filename)
+    private function upload_file($upload_url, $filename): ResponseInterface
     {
-        $ch = curl_init($upload_url);
-
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        curl_setopt($ch, CURLOPT_PUT, 1);
-        curl_setopt($ch, CURLOPT_INFILESIZE, filesize($filename));
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/zip'));
-        $fh_res = fopen($filename, 'r');
-        curl_setopt($ch, CURLOPT_INFILE, $fh_res);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, false);
-        $response = curl_exec($ch);
-        fclose($fh_res);
-        curl_close($ch);
-        return $response;
-    }
-
-    /**
-     * @param $upload_url
-     * @param $stream
-     * @param $file_len
-     * @return bool|string
-     */
-    private function upload_stream($upload_url, $stream, $file_len)
-    {
-        $ch = curl_init($upload_url);
-
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        curl_setopt($ch, CURLOPT_PUT, 1);
-        curl_setopt($ch, CURLOPT_INFILESIZE, $file_len);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/zip'));
-        curl_setopt($ch, CURLOPT_INFILE, $stream);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, false);
-        $response = curl_exec($ch);
-        curl_close($ch);
+        $client = new Client([
+            'timeout'  => 5.0
+        ]);
+        $body = fopen($filename, 'r');
+        $response = $client->request('POST', $upload_url, ['body' => $body]);
+        fclose($body);
         return $response;
     }
 

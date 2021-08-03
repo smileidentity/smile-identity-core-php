@@ -6,11 +6,12 @@
     "php": "~7.4",
     "ext-curl": "*",
     "ext-openssl": "*",
-    "maennchen/zipstream-php": "^1.2.0"
+    "maennchen/zipstream-php": "^1.2.0",
+    "guzzlehttp/guzzle": "^7.0"
   },
   "require-dev": {
-    "phpunit/phpunit": "^9.5",
-    "letsdrink/ouzo-goodies": "^1.0"
+    "phpunit/phpunit": "~9.5.8",
+    "letsdrink/ouzo-goodies": "~1.0"
   },
   "autoload": {
     "psr-0": {

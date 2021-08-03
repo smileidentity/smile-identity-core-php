@@ -2,6 +2,9 @@
 spl_autoload_register(function($class) {
     require_once($class.'.php');
 });
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
+use Psr\Http\Message\ResponseInterface;
 
 require 'vendor/autoload.php';
 
@@ -44,15 +47,14 @@ class IdApi
      * @param $partner_params
      * @param $id_info
      * @param $use_async
-     * @return mixed
+     * @return ResponseInterface
+     * @throws GuzzleException
      */
-    public function submit_job($partner_params, $id_info, $use_async)
+    public function submit_job($partner_params, $id_info, $use_async): ResponseInterface
     {
         $b = $this->sig_class->generate_sec_key();
         $sec_key = $b[0];
         $timestamp = $b[1];
-        $response = false;
-        $smile_job_id = '';
 
         $data = array(
             'language' => 'php',
@@ -63,24 +65,16 @@ class IdApi
             'partner_id' => $this->partner_id
         );
         $data = array_merge($data, $id_info);
-
-
         $json_data = json_encode($data, JSON_PRETTY_PRINT);
 
-        if($use_async)
-            $ch = curl_init($this->sid_server.'/async_id_verification');
-        else
-            $ch = curl_init($this->sid_server.'/id_verification');
-        # Setup request to send json via POST.
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $json_data );
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true );
-        $response = curl_exec($ch);
-        curl_close($ch);
-        return json_decode($response);
-
+        $client = new Client([
+            'base_uri' => $this->sid_server,
+            'timeout'  => 5.0
+        ]);
+        $url = $use_async ? '/async_id_verification' : '/id_verification';
+        return $client->post($url, [
+            'content-type' => 'application/json',
+            'body' => $json_data
+        ]);
     }
 }

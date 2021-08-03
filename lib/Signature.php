@@ -29,7 +29,7 @@ class Signature
      */
     function generate_sec_key($timestamp = null): array
     {
-        $timestamp = Utilities::isTimestamp($timestamp) ? $timestamp : $this->timestamp;
+        $timestamp = $this->isTimestamp($timestamp) ? $timestamp : $this->timestamp;
         $plaintext = intval($this->partner_id) . ":" . $timestamp;
         $hash_signature = hash('sha256', $plaintext);
         $sec_key = '';
@@ -60,7 +60,7 @@ class Signature
      */
     function generate_signature($timestamp = null): array
     {
-        $timestamp = Utilities::isTimestamp($timestamp) ? $timestamp : $this->timestamp;
+        $timestamp = $this->isTimestamp($timestamp) ? $timestamp : $this->timestamp;
         $message = $timestamp . $this->partner_id . "sid_request";
         $sec_key = base64_decode(hash_hmac('sha256',$message, $this->api_key, true));
         return array($sec_key, $timestamp);
@@ -74,5 +74,19 @@ class Signature
     function confirm_signature($timestamp, string $signature): bool
     {
         return $signature === $this->generate_signature($timestamp)[0];
+    }
+
+
+    /**
+     * @param $timestamp
+     * @return bool
+     */
+    private function isTimestamp($timestamp): bool
+    {
+        if(ctype_digit($timestamp) && strtotime(date('Y-m-d H:i:s', $timestamp)) === (int)$timestamp) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

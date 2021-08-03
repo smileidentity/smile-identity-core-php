@@ -47,9 +47,6 @@ final class IdApiTest extends TestCase
 
     public function testSyncSubmitJob()
     {
-        $partner_params = '';
-        $id_info = [];
-        $use_async = false;
-        $this->idApi->submit_job($this->partner_params, $this->id_info, $use_async);
+        $this->idApi->submit_job($this->partner_params, $this->id_info, false);
     }
 }
