@@ -1,27 +1,27 @@
 <?php
 declare(strict_types=1);
 
-require 'lib/WebApi.php';
+require 'lib/SmileIdentityCore.php';
 use PHPUnit\Framework\TestCase;
 use Ouzo\Utilities\Clock;
 
-final class WebApiTest extends TestCase
+final class SmileIdentityCoreTest extends TestCase
 {
-    protected WebApi $sic;
+    protected sid\SmileIdentityCore $sic;
 
     protected function setUp(): void
     {
         Clock::freeze('2011-01-02 12:34');
-        $sid_server = 1;
+        $sid_server = 0;
         $partner_id = 212;
         $default_callback = 'https://google.com';
         $api_key = file_get_contents(__DIR__ . "/assets/ApiKey.pub");
-        $this->sic = new WebApi($partner_id, $default_callback, $api_key, $sid_server);
+        $this->sic = new sid\SmileIdentityCore($partner_id, $default_callback, $api_key, $sid_server);
     }
 
     public function testInitialize(): void
     {
-        $this->assertInstanceOf('WebApi', $this->sic);
+        $this->assertInstanceOf('SmileIdentityCore', $this->sic);
     }
 
     public function testGetVersion(): void

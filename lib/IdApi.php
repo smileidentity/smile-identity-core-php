@@ -1,18 +1,19 @@
 <?php
+namespace sid;
 spl_autoload_register(function($class) {
     require_once($class.'.php');
 });
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
-use Psr\Http\Message\ResponseInterface;
+use \GuzzleHttp\Client;
+use \GuzzleHttp\Exception\GuzzleException;
+use \Psr\Http\Message\ResponseInterface;
 
 require 'vendor/autoload.php';
 
 class IdApi
 {
     const SID_SERVERS = [
-        'https://3eydmgh10d.execute-api.us-west-2.amazonaws.com/test',
-        'https://la7am6gdm8.execute-api.us-west-2.amazonaws.com/prod'
+        'https://testapi.smileidentity.com/v1',
+        'https://api.smileidentity.com/v1'
     ];
     public Signature $sig_class;
     private String $partner_id;
@@ -36,7 +37,7 @@ class IdApi
             if(intval($sid_server) < 2) {
                 $this->sid_server = self::SID_SERVERS[intval($sid_server)];
             } else {
-                throw new Exception("Invalid server selected");
+                throw new \Exception("Invalid server selected");
             }
         } else {
             $this->sid_server = $sid_server;

@@ -1,4 +1,5 @@
 <?php
+namespace sid;
 spl_autoload_register(function($class) {
     require_once($class.'.php');
 });
@@ -62,7 +63,7 @@ class Signature
     {
         $timestamp = $this->isTimestamp($timestamp) ? $timestamp : $this->timestamp;
         $message = $timestamp . $this->partner_id . "sid_request";
-        $sec_key = base64_decode(hash_hmac('sha256',$message, $this->api_key, true));
+        $sec_key = base64_encode(hash_hmac('sha256',$message, $this->api_key, true));
         return array($sec_key, $timestamp);
     }
 

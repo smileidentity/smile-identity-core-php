@@ -2,6 +2,8 @@
 declare(strict_types=1);
 
 require 'lib/IdApi.php';
+
+use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase;
 use Ouzo\Utilities\Clock;
 
@@ -12,7 +14,7 @@ final class IdApiTest extends TestCase
      */
     private array $id_info;
     private array $partner_params;
-    private IdApi $idApi;
+    private sid\IdApi $idApi;
 
     protected function setUp(): void
     {
@@ -37,14 +39,20 @@ final class IdApiTest extends TestCase
         $partner_id = 212;
         $default_callback = 'https://google.com';
         $api_key = file_get_contents(__DIR__ . "/assets/ApiKey.pub");
-        $this->idApi = new IdApi($partner_id, $default_callback, $api_key, $sid_server);
+        $this->idApi = new sid\IdApi($partner_id, $default_callback, $api_key, $sid_server);
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testAsyncSubmitJob()
     {
         $this->idApi->submit_job($this->partner_params, $this->id_info, true);
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testSyncSubmitJob()
     {
         $this->idApi->submit_job($this->partner_params, $this->id_info, false);

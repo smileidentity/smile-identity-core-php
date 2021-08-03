@@ -1,16 +1,17 @@
 <?php
+namespace sid;
 spl_autoload_register(function($class) {
      require_once($class.'.php');
 });
 
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
-use Psr\Http\Message\ResponseInterface;
+use \GuzzleHttp\Client;
+use \GuzzleHttp\Exception\GuzzleException;
+use \Psr\Http\Message\ResponseInterface;
 
 const VERSION = '1.1.0';
 const DEFAULT_JOB_STATUS_SLEEP = 2;
 
-class WebApi
+class SmileIdentityCore
 {
     const SID_SERVERS = [
         'https://3eydmgh10d.execute-api.us-west-2.amazonaws.com/test',
@@ -38,7 +39,7 @@ class WebApi
             if(intval($sid_server) < 2) {
                 $this->sid_server = self::SID_SERVERS[intval($sid_server)];
             } else {
-                throw new Exception("Invalid server selected");
+                throw new \Exception("Invalid server selected");
             }
         } else {
             $this->sid_server = $sid_server;
@@ -135,7 +136,7 @@ class WebApi
         return $client->post('/job_status',
             [
                 'content-type' => 'application/json',
-                GuzzleHttp\RequestOptions::JSON => $json_data
+                \GuzzleHttp\RequestOptions::JSON => $json_data
             ]
         );
     }
