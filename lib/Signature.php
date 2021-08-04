@@ -1,5 +1,4 @@
 <?php
-namespace sid;
 spl_autoload_register(function($class) {
     require_once($class.'.php');
 });
@@ -42,21 +41,6 @@ class Signature
 
     /**
      * @param $timestamp
-     * @param string $sec_key
-     * @return bool
-     */
-    function confirm_sec_key($timestamp, string $sec_key): bool
-    {
-        $sec_key_exploded = explode("|", $sec_key);
-        $encrypted = base64_decode($sec_key_exploded[0]);
-        $hash_signature = $sec_key_exploded[1];
-        $decrypted = '';
-        openssl_public_decrypt($encrypted, $decrypted, base64_decode($this->api_key), OPENSSL_PKCS1_PADDING);
-        return $hash_signature == $decrypted;
-    }
-
-    /**
-     * @param $timestamp
      * @return array
      */
     function generate_signature($timestamp = null): array
@@ -76,7 +60,6 @@ class Signature
     {
         return $signature === $this->generate_signature($timestamp)[0];
     }
-
 
     /**
      * @param $timestamp

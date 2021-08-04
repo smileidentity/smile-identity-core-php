@@ -7,8 +7,11 @@ use Ouzo\Utilities\Clock;
 
 final class SmileIdentityCoreTest extends TestCase
 {
-    protected sid\SmileIdentityCore $sic;
+    protected SmileIdentityCore $sic;
 
+    /**
+     * @throws Exception
+     */
     protected function setUp(): void
     {
         Clock::freeze('2011-01-02 12:34');
@@ -16,7 +19,7 @@ final class SmileIdentityCoreTest extends TestCase
         $partner_id = 212;
         $default_callback = 'https://google.com';
         $api_key = file_get_contents(__DIR__ . "/assets/ApiKey.pub");
-        $this->sic = new sid\SmileIdentityCore($partner_id, $default_callback, $api_key, $sid_server);
+        $this->sic = new SmileIdentityCore($partner_id, $default_callback, $api_key, $sid_server);
     }
 
     public function testInitialize(): void

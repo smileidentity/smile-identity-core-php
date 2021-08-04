@@ -14,8 +14,11 @@ final class IdApiTest extends TestCase
      */
     private array $id_info;
     private array $partner_params;
-    private sid\IdApi $idApi;
+    private IdApi $idApi;
 
+    /**
+     * @throws Exception
+     */
     protected function setUp(): void
     {
         $this->partner_params = array(
@@ -35,11 +38,11 @@ final class IdApiTest extends TestCase
         );
 
         Clock::freeze('2011-01-02 12:34');
-        $sid_server = 1;
+        $sid_server = 0;
         $partner_id = 212;
         $default_callback = 'https://google.com';
         $api_key = file_get_contents(__DIR__ . "/assets/ApiKey.pub");
-        $this->idApi = new sid\IdApi($partner_id, $default_callback, $api_key, $sid_server);
+        $this->idApi = new IdApi($partner_id, $default_callback, $api_key, $sid_server);
     }
 
     /**
@@ -47,7 +50,8 @@ final class IdApiTest extends TestCase
      */
     public function testAsyncSubmitJob()
     {
-        $this->idApi->submit_job($this->partner_params, $this->id_info, true);
+        $job = $this->idApi->submit_job($this->partner_params, $this->id_info, true);
+        $this->assertEquals(200, $job->getStatusCode());
     }
 
     /**
@@ -55,6 +59,7 @@ final class IdApiTest extends TestCase
      */
     public function testSyncSubmitJob()
     {
-        $this->idApi->submit_job($this->partner_params, $this->id_info, false);
+        $job = $this->idApi->submit_job($this->partner_params, $this->id_info, false);
+        $this->assertEquals(200, $job->getStatusCode());
     }
 }

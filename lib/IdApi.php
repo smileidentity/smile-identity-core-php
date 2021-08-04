@@ -1,5 +1,4 @@
 <?php
-namespace sid;
 spl_autoload_register(function($class) {
     require_once($class.'.php');
 });
@@ -72,7 +71,7 @@ class IdApi
             'base_uri' => $this->sid_server,
             'timeout'  => 5.0
         ]);
-        $url = $use_async ? '/async_id_verification' : '/id_verification';
+        $url = $use_async ? '/v1/async_id_verification' : '/v1/id_verification';
         return $client->post($url, [
             'content-type' => 'application/json',
             'body' => $json_data

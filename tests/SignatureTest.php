@@ -7,14 +7,14 @@ use Ouzo\Utilities\Clock;
 
 final class SignatureTest extends TestCase
 {
-    private sid\Signature $sig;
+    private Signature $sig;
 
     protected function setUp(): void
     {
         Clock::freeze('2011-01-02 12:34');
         $partner_id = 212;
         $api_key = file_get_contents(__DIR__ . "/assets/ApiKey.pub");
-        $this->sig = new sid\Signature($api_key, $partner_id);
+        $this->sig = new Signature($api_key, $partner_id);
     }
 
     public function testGenerateSecKey(): void
