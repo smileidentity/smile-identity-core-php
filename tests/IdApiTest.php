@@ -3,24 +3,35 @@ declare(strict_types=1);
 
 require 'lib/IdApi.php';
 
+use GuzzleHttp\Client;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase;
 use Ouzo\Utilities\Clock;
 
 final class IdApiTest extends TestCase
 {
-    /**
-     * @var string[]
-     */
+    private $api_key;
     private array $id_info;
     private array $partner_params;
     private IdApi $idApi;
+    private string $default_callback;
+    private int $partner_id;
+    private array $data;
 
     /**
      * @throws Exception
      */
     protected function setUp(): void
     {
+        Clock::freeze('2011-01-02 12:34');
+        $sid_server = 0;
+        $this->partner_id = 212;
+        $this->default_callback = 'https://google.com';
+        $this->api_key = file_get_contents(__DIR__ . "/assets/ApiKey.pub");
+
         $this->partner_params = array(
             'user_id' => '1',
             'job_id' => '1',
@@ -37,12 +48,16 @@ final class IdApiTest extends TestCase
             'phone_number' => '0726789065'
         );
 
-        Clock::freeze('2011-01-02 12:34');
-        $sid_server = 0;
-        $partner_id = 212;
-        $default_callback = 'https://google.com';
-        $api_key = file_get_contents(__DIR__ . "/assets/ApiKey.pub");
-        $this->idApi = new IdApi($partner_id, $default_callback, $api_key, $sid_server);
+        $signature = new Signature($this->api_key, $this->partner_id);
+        $this->data = array(
+            'language' => 'php',
+            'callback_url' => $this->default_callback,
+            'partner_params' => $this->partner_params,
+            'sec_key' => $signature->generate_sec_key()[0],
+            'timestamp' => Clock::now()->getTimestamp(),
+            'partner_id' => $this->partner_id
+        );
+        $this->idApi = new IdApi($this->partner_id, $this->default_callback, $this->api_key, $sid_server);
     }
 
     /**
@@ -50,8 +65,18 @@ final class IdApiTest extends TestCase
      */
     public function testAsyncSubmitJob()
     {
-        $job = $this->idApi->submit_job($this->partner_params, $this->id_info, true);
+        $data = array_merge($this->data, $this->id_info);
+        $json_data = json_encode($data, JSON_PRETTY_PRINT);
+
+        $mock = new MockHandler([
+            new Response(200, ['body' => $json_data], '{"success":true}'),
+        ]);
+
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler]);
+        $job = $this->idApi->submit_job($this->partner_params, $this->id_info, true, $client);
         $this->assertEquals(200, $job->getStatusCode());
+        $this->assertEquals('{"success":true}', $job->getBody()->getContents());
     }
 
     /**
@@ -59,7 +84,17 @@ final class IdApiTest extends TestCase
      */
     public function testSyncSubmitJob()
     {
-        $job = $this->idApi->submit_job($this->partner_params, $this->id_info, false);
+        $data = array_merge($this->data, $this->id_info);
+        $json_data = json_encode($data, JSON_PRETTY_PRINT);
+
+        $mock = new MockHandler([
+            new Response(200, ['body' => $json_data], '{"success":true}'),
+        ]);
+
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler]);
+        $job = $this->idApi->submit_job($this->partner_params, $this->id_info, false, $client);
         $this->assertEquals(200, $job->getStatusCode());
+        $this->assertEquals('{"success":true}', $job->getBody()->getContents());
     }
 }

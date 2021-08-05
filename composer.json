@@ -5,6 +5,7 @@
   "require": {
     "php": "~7.4",
     "ext-curl": "*",
+    "ext-json": "*",
     "ext-openssl": "*",
     "maennchen/zipstream-php": "^1.2.0",
     "guzzlehttp/guzzle": "^7.0"

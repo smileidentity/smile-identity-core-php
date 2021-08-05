@@ -2,9 +2,9 @@
 spl_autoload_register(function($class) {
     require_once($class.'.php');
 });
-use \GuzzleHttp\Client;
-use \GuzzleHttp\Exception\GuzzleException;
-use \Psr\Http\Message\ResponseInterface;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
+use Psr\Http\Message\ResponseInterface;
 
 require 'vendor/autoload.php';
 
@@ -36,7 +36,7 @@ class IdApi
             if(intval($sid_server) < 2) {
                 $this->sid_server = self::SID_SERVERS[intval($sid_server)];
             } else {
-                throw new \Exception("Invalid server selected");
+                throw new Exception("Invalid server selected");
             }
         } else {
             $this->sid_server = $sid_server;
@@ -50,7 +50,7 @@ class IdApi
      * @return ResponseInterface
      * @throws GuzzleException
      */
-    public function submit_job($partner_params, $id_info, $use_async): ResponseInterface
+    public function submit_job($partner_params, $id_info, $use_async, $guzzle = null): ResponseInterface
     {
         $b = $this->sig_class->generate_sec_key();
         $sec_key = $b[0];
@@ -66,11 +66,7 @@ class IdApi
         );
         $data = array_merge($data, $id_info);
         $json_data = json_encode($data, JSON_PRETTY_PRINT);
-
-        $client = new Client([
-            'base_uri' => $this->sid_server,
-            'timeout'  => 5.0
-        ]);
+        $client = is_null($guzzle) ? new Client(['base_uri' => $this->sid_server, 'timeout'  => 5.0]) : $guzzle;
         $url = $use_async ? '/v1/async_id_verification' : '/v1/id_verification';
         return $client->post($url, [
             'content-type' => 'application/json',
