@@ -39,6 +39,16 @@ class Signature
         return array($sec_key, $timestamp);
     }
 
+    function confirm_sec_key($sec_key): bool
+    {
+        $sec_key_exploded = explode("|",$sec_key);
+        $encrypted = base64_decode($sec_key_exploded[0]);
+        $hash_signature = $sec_key_exploded[1];
+        $decrypted = '';
+        openssl_public_decrypt($encrypted, $decrypted, base64_decode($this->api_key), OPENSSL_PKCS1_PADDING);
+        return $hash_signature == $decrypted;
+    }
+
     /**
      * @param $timestamp
      * @return array

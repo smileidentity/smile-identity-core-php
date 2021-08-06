@@ -12,7 +12,7 @@ $api_key = '<Put your base64 encoded API key here>';
 // Use '0' for the sandbox (test) server, use '1' for production server
 $sid_server = '0';
 
-$sid_core = new sid\SmileIdentityCore(
+$sid_core = new SmileIdentityCore(
     $partner_id,
     $default_callback,
     $api_key,
@@ -94,7 +94,7 @@ $result = $sid_core->submit_job($partner_params, $image_details, $id_info, $opti
 // Smile ID ID Verification API usage
 //
 
-$sid_idapi = new sid\IdApi(
+$sid_idapi = new IdApi(
     $partner_id,
     $default_callback, // Used if $use_async is true otherwise should be ""
     $api_key,
