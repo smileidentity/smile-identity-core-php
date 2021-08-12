@@ -12,10 +12,6 @@ const DEFAULT_JOB_STATUS_SLEEP = 2;
 
 class SmileIdentityCore
 {
-    const SID_SERVERS = [
-        'https://3eydmgh10d.execute-api.us-west-2.amazonaws.com/test',
-        'https://la7am6gdm8.execute-api.us-west-2.amazonaws.com/prod'
-    ];
     public Signature $sig_class;
     private String $partner_id;
     private String $default_callback;
@@ -36,7 +32,7 @@ class SmileIdentityCore
         $this->sig_class = new Signature($api_key, $partner_id);
         if(strlen($sid_server) == 1) {
             if(intval($sid_server) < 2) {
-                $this->sid_server = self::SID_SERVERS[intval($sid_server)];
+                $this->sid_server = Config::SID_SERVERS[intval($sid_server)];
             } else {
                 throw new \Exception("Invalid server selected");
             }
@@ -47,7 +43,7 @@ class SmileIdentityCore
 
     public function get_version(): string
     {
-        return VERSION;
+        return Config::VERSION;
     }
 
     /**

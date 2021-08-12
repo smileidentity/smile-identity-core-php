@@ -34,7 +34,7 @@ class IdApi
         $this->sig_class = new Signature($api_key, $partner_id);
         if(strlen($sid_server) == 1) {
             if(intval($sid_server) < 2) {
-                $this->sid_server = self::SID_SERVERS[intval($sid_server)];
+                $this->sid_server = Config::SID_SERVERS[intval($sid_server)];
             } else {
                 throw new Exception("Invalid server selected");
             }
