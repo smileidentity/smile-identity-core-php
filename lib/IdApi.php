@@ -2,6 +2,7 @@
 spl_autoload_register(function($class) {
     require_once($class.'.php');
 });
+
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Psr\Http\Message\ResponseInterface;
@@ -50,7 +51,7 @@ class IdApi
      * @return ResponseInterface
      * @throws GuzzleException
      */
-    public function submit_job($partner_params, $id_info, $use_async, $guzzle = null): ResponseInterface
+    public function submit_job($partner_params, $id_info, $options, $guzzle = null): ResponseInterface
     {
         $b = $this->sig_class->generate_sec_key();
         $sec_key = $b[0];
@@ -67,7 +68,7 @@ class IdApi
         $data = array_merge($data, $id_info);
         $json_data = json_encode($data, JSON_PRETTY_PRINT);
         $client = is_null($guzzle) ? new Client(['base_uri' => $this->sid_server, 'timeout'  => 5.0]) : $guzzle;
-        $url = $use_async ? '/v1/async_id_verification' : '/v1/id_verification';
+        $url = $options['user_async'] ? '/v1/async_id_verification' : '/v1/id_verification';
         return $client->post($url, [
             'content-type' => 'application/json',
             'body' => $json_data

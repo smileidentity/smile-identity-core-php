@@ -34,7 +34,8 @@ $partner_params = array(
     // 8 for updating an registered photo
     'job_type' => <1 | 2 | 4 | 8>,
      // You can add as many key value pairs as you line but all MUST be strings.
-    'optional_info' => 'PHP Test Data'
+    'optional_info' => 'PHP Test Data',
+    'signature' => <true | false>
     );
 
 // Create options

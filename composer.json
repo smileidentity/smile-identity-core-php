@@ -7,7 +7,9 @@
     "ext-curl": "*",
     "ext-json": "*",
     "ext-openssl": "*",
-    "maennchen/zipstream-php": "^1.2.0",
+    "ext-zip": "*",
+    "maennchen/zipstream-php": "^2.1",
+    "pablotron/zipstream": "~0.3",
     "guzzlehttp/guzzle": "^7.0"
   },
   "require-dev": {
