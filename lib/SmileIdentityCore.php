@@ -152,97 +152,6 @@ class SmileIdentityCore
     }
 
     /**
-     * @param $filepath
-     * @param $partner_params
-     * @param $options
-     * @return array|bool
-     * @throws GuzzleException
-     */
-    public function submit_zip($filepath, $partner_params, $options)
-    {
-        $path_parts = pathinfo($filepath);
-        $filename = $path_parts['filename'];
-        $b = $this->sig_class->generate_sec_key();
-        $sec_key = $b[0];
-        $timestamp = $b[1];
-        $response = false;
-        $prep_upload_response_array = $this->call_prep_upload($sec_key, $timestamp, $partner_params, $filename, $options);
-        $code = $prep_upload_response_array->code;
-        if ($code == '2202') {
-            $upload_url = $prep_upload_response_array->upload_url;
-            $ref_id = $prep_upload_response_array->ref_id;
-            $smile_job_id = $prep_upload_response_array->smile_job_id;
-            $response = $this->upload_file($upload_url, $filepath);
-        }
-        $result = array(
-            'success' => $response,
-            "smile_job_id" => $smile_job_id
-        );
-
-        if ($result['success'] != false) {
-            if ($options['return_job_status']) {
-                for ($i = 1; $i <= $this->js_timeout; $i += DEFAULT_JOB_STATUS_SLEEP) {
-                    sleep(DEFAULT_JOB_STATUS_SLEEP);
-                    $response = $this->query_job_status($partner_params, $options);
-                    if ($response['job_complete'] == true)
-                        break;
-                }
-                $result = array_merge($result, $response);
-            }
-        }
-        return $result;
-    }
-
-    /**
-     * @param $partner_params
-     * @param $options
-     * @return array
-     * @throws GuzzleException
-     */
-    public function query_job_status($partner_params, $options): array
-    {
-        if ($options['signature']) {
-            $sec_params = $this->sig_class->generate_signature();
-        } else {
-            $sec_params = $this->sig_class->generate_sec_key();
-        }
-
-        $data = array(
-            'user_id' => $partner_params['user_id'],
-            'job_id' => $partner_params['job_id'],
-            'partner_id' => $this->partner_id,
-            'image_links' => $options['return_image_links'],
-            'history' => $options['return_history'],
-        );
-        $data = array_merge($data, $sec_params);
-
-        $json_data = json_encode($data, JSON_PRETTY_PRINT);
-
-        $client = new Client([
-            'base_uri' => $this->sid_server,
-            'timeout' => 5.0
-        ]);
-        $resp = $client->post('/job_status',
-            [
-                'content-type' => 'application/json',
-                \GuzzleHttp\RequestOptions::JSON => $json_data
-            ]
-        );
-        return json_decode($resp->getBody()->getContents(), true);
-    }
-
-    /**
-     * @param $partner_params
-     * @param $options
-     * @return mixed
-     * @throws GuzzleException
-     */
-    public function get_job_status($partner_params, $options)
-    {
-        return $this->query_job_status($partner_params, $options);
-    }
-
-    /**
      * @throws GuzzleException
      * @throws Exception
      */
@@ -296,6 +205,55 @@ class SmileIdentityCore
             $result = array_merge($result, $response);
         }
         return $result;
+    }
+
+    /**
+     * @param $partner_params
+     * @param $options
+     * @return array
+     * @throws GuzzleException
+     */
+    public function query_job_status($partner_params, $options): array
+    {
+        if ($options['signature']) {
+            $sec_params = $this->sig_class->generate_signature();
+        } else {
+            $sec_params = $this->sig_class->generate_sec_key();
+        }
+
+        $data = array(
+            'user_id' => $partner_params['user_id'],
+            'job_id' => $partner_params['job_id'],
+            'partner_id' => $this->partner_id,
+            'image_links' => $options['return_image_links'],
+            'history' => $options['return_history'],
+        );
+        $data = array_merge($data, $sec_params);
+
+        $json_data = json_encode($data, JSON_PRETTY_PRINT);
+
+        $client = new Client([
+            'base_uri' => $this->sid_server,
+            'timeout' => 5.0
+        ]);
+        $resp = $client->post('job_status',
+            [
+                'content-type' => 'application/json',
+                \GuzzleHttp\RequestOptions::JSON => $json_data
+            ]
+        );
+        return json_decode($resp->getBody()->getContents(), true);
+    }
+
+    /**
+     * @param $partner_params
+     * @param $options
+     * @return mixed
+     * @throws GuzzleException
+     */
+    public function get_job_status($partner_params, $options)
+    {
+        return $this->query_job_status($partner_params, $options);
     }
 
     private function configure_image_payload($image_details): array
