@@ -68,7 +68,7 @@ class IdApi
         $data = array_merge($data, $id_info);
         $json_data = json_encode($data, JSON_PRETTY_PRINT);
         $client = is_null($guzzle) ? new Client(['base_uri' => $this->sid_server, 'timeout'  => 5.0]) : $guzzle;
-        $url = $options['user_async'] ? '/v1/async_id_verification' : '/v1/id_verification';
+        $url = $options['user_async'] ? 'async_id_verification' : 'id_verification';
         return $client->post($url, [
             'content-type' => 'application/json',
             'body' => $json_data
