@@ -20,7 +20,7 @@ class Signature
     {
         $this->api_key = $api_key;
         $this->partner_id = $partner_id;
-        $this->timestamp = Clock::now()->format(DateTimeInterface::ISO8601);
+        $this->timestamp = Clock::now()->getTimestamp();
     }
 
     /**
@@ -55,7 +55,7 @@ class Signature
      */
     function generate_signature($timestamp = null): array
     {
-        $timestamp = $this->isTimestamp($timestamp) ? $timestamp : Clock::now()->format(DateTimeInterface::ISO8601);
+        $timestamp = $timestamp != null ? $timestamp : Clock::now()->format(DateTimeInterface::ISO8601);
         $message = $timestamp . $this->partner_id . "sid_request";
         $sec_key = base64_encode(hash_hmac('sha256', $message, $this->api_key, true));
         return array("signature" => $sec_key, "timestamp" => $timestamp);

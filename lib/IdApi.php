@@ -1,6 +1,6 @@
 <?php
-spl_autoload_register(function($class) {
-    require_once($class.'.php');
+spl_autoload_register(function ($class) {
+    require_once($class . '.php');
 });
 
 use GuzzleHttp\Client;
@@ -16,15 +16,15 @@ class IdApi
         'https://api.smileidentity.com/v1'
     ];
     public Signature $sig_class;
-    private String $partner_id;
-    private String $default_callback;
-    private String $sid_server;
+    private string $partner_id;
+    private string $default_callback;
+    private string $sid_server;
 
     /**
      * IdApi constructor.
      * @param $partner_id
      * @param $default_callback
-     * @param $api_key,
+     * @param $api_key ,
      * @param $sid_server
      * @throws Exception
      */
@@ -33,8 +33,8 @@ class IdApi
         $this->partner_id = $partner_id;
         $this->default_callback = $default_callback;
         $this->sig_class = new Signature($api_key, $partner_id);
-        if(strlen($sid_server) == 1) {
-            if(intval($sid_server) < 2) {
+        if (strlen($sid_server) == 1) {
+            if (intval($sid_server) < 2) {
                 $this->sid_server = Config::SID_SERVERS[intval($sid_server)];
             } else {
                 throw new Exception("Invalid server selected");
@@ -50,24 +50,26 @@ class IdApi
      * @param $use_async
      * @return ResponseInterface
      * @throws GuzzleException
+     * @throws Exception
      */
     public function submit_job($partner_params, $id_info, $options, $guzzle = null): ResponseInterface
     {
-        $b = $this->sig_class->generate_sec_key();
-        $sec_key = $b[0];
-        $timestamp = $b[1];
+        validateOptions($options);
+        if ($options['signature']) {
+            $sec_params = $this->sig_class->generate_signature();
+        } else {
+            $sec_params = $this->sig_class->generate_sec_key();
+        }
 
         $data = array(
             'language' => 'php',
             'callback_url' => $this->default_callback,
             'partner_params' => $partner_params,
-            'sec_key' => $sec_key,
-            'timestamp' => $timestamp,
             'partner_id' => $this->partner_id
         );
-        $data = array_merge($data, $id_info);
+        $data = array_merge($data, $id_info, $sec_params);
         $json_data = json_encode($data, JSON_PRETTY_PRINT);
-        $client = is_null($guzzle) ? new Client(['base_uri' => $this->sid_server, 'timeout'  => 5.0]) : $guzzle;
+        $client = is_null($guzzle) ? new Client(['base_uri' => $this->sid_server, 'timeout' => 5.0]) : $guzzle;
         $url = $options['user_async'] ? 'async_id_verification' : 'id_verification';
         return $client->post($url, [
             'content-type' => 'application/json',

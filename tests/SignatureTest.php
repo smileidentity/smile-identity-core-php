@@ -2,8 +2,9 @@
 declare(strict_types=1);
 
 require 'lib/Signature.php';
-use PHPUnit\Framework\TestCase;
+
 use Ouzo\Utilities\Clock;
+use PHPUnit\Framework\TestCase;
 
 final class SignatureTest extends TestCase
 {
@@ -22,7 +23,7 @@ final class SignatureTest extends TestCase
         $generatedKey = $this->sig->generate_sec_key();
         $timestamp = Clock::now()->getTimestamp();
         $this->assertSame(2, count($generatedKey));
-        $this->assertSame($timestamp, $generatedKey[1]);
+        $this->assertSame($timestamp, $generatedKey['timestamp']);
     }
 
     public function testConfirmSecKey(): void
@@ -31,21 +32,26 @@ final class SignatureTest extends TestCase
         $this->markTestSkipped('must be revisited.');
         $generatedKey = $this->sig->generate_sec_key();
         $confirmSecKey = $this->sig->confirm_sec_key($generatedKey);
-        $this->assertTrue($confirmSecKey);
-;    }
+        $this->assertTrue($confirmSecKey);;
+    }
 
     public function testGenerateSignature()
     {
-        $timestamp = Clock::now()->getTimestamp();
+        $timestamp = Clock::now()->format(DateTimeInterface::ISO8601);
         $signature = $this->sig->generate_signature();
         $this->assertSame(2, count($signature));
-        $this->assertSame($timestamp, $signature[1]);
+        $this->assertSame($timestamp, $signature['timestamp']);
     }
 
     public function testConfirmSignature()
     {
         $timestamp = Clock::now()->getTimestamp();
-        $signature = $this->sig->generate_signature($timestamp)[0];
+        $signature = $this->sig->generate_signature($timestamp)['signature'];
+        $confirm_signature = $this->sig->confirm_signature($timestamp, $signature);
+        $this->assertTrue($confirm_signature);
+
+        $timestamp = Clock::now()->format(DateTimeInterface::ISO8601);
+        $signature = $this->sig->generate_signature($timestamp)['signature'];
         $confirm_signature = $this->sig->confirm_signature($timestamp, $signature);
         $this->assertTrue($confirm_signature);
     }

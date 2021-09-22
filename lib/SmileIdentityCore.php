@@ -3,6 +3,8 @@ spl_autoload_register(function ($class) {
     require_once($class . '.php');
 });
 
+include 'utils.php';
+
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
@@ -20,90 +22,6 @@ const default_options = array(
     'signature' => false,
     'user_async' => false,
 );
-
-
-function endsWith($haystack, $needle)
-{
-    $length = strlen($needle);
-    if (!$length) {
-        return true;
-    }
-    return substr($haystack, -$length) === $needle;
-}
-
-
-/**
- * @throws Exception
- */
-function validatePartnerParams($partner_params)
-{
-    if ($partner_params == null) {
-        throw new Exception("Please ensure that you send through partner params");
-    }
-    if (!array_key_exists("user_id", $partner_params)
-        || !array_key_exists("job_id", $partner_params)
-        || !array_key_exists("job_type", $partner_params)) {
-        throw new Exception("Partner Parameter Arguments may not be null or empty");
-    }
-    if (gettype($partner_params["job_id"]) === "string") {
-        throw new Exception("Please ensure job_id is a string");
-    }
-    if (gettype($partner_params["user_id"]) === "string") {
-        throw new Exception("Please ensure user_id is a string");
-    }
-    if (gettype($partner_params["job_type"]) === "integer") {
-        throw new Exception("Please ensure job_type is a integer");
-    }
-}
-
-
-/**
- * @throws Exception
- */
-function validateIdParams($id_params)
-{
-    if ($id_params == null) {
-        throw new Exception("Please ensure that you send through partner params");
-    }
-    if ($id_params['entered']) {
-        foreach (["country", "id_type", "id_number"] as $key) {
-            $message = "Please make sure that $key is included in the id_info and has a value";
-            if (!array_key_exists($key, $id_params)) {
-                throw new Exception($message);
-            }
-            if ($id_params[$key] === null) {
-                throw new Exception($message);
-            }
-        }
-    }
-}
-
-/**
- * @throws Exception
- */
-function validateImageParams($image_details)
-{
-    if ($image_details === null) {
-        throw new Exception('Please ensure that you send through image details');
-    }
-    if (gettype($image_details) !== "array") {
-        throw new Exception('Image details needs to be an array');
-    }
-    $has_selfie = false;
-    foreach ($image_details as $item) {
-        if (gettype($item) !== "array"
-            || !array_key_exists("image_type_id", $item)
-            || !array_key_exists("image", $item)) {
-            throw new Exception("Image details content must to be an array with 'image_type_id' and 'image' has keys");
-        }
-        if ($item["image_type_id"] === 0 || $item["image_type_id"] === 2) {
-            $has_selfie = true;
-        }
-    }
-    if (!$has_selfie) {
-        throw new Exception('You need to send through at least one selfie image');
-    }
-}
 
 class SmileIdentityCore
 {
@@ -157,7 +75,7 @@ class SmileIdentityCore
      */
     public function submit_job($partner_params, $image_details, $id_info, $_options)
     {
-        $options = array_merge(default_options, $_options);
+        $options = $this->getOptions($_options);
 
         //TODO: add data validation
         validatePartnerParams($partner_params);
@@ -165,14 +83,12 @@ class SmileIdentityCore
 
         $job_type = $partner_params['job_type'];
 
-        if ($job_type !== 5) {
-            validateImageParams($image_details);
-        }
-
         if ($job_type == 5) {
             $id_api = new IdApi($this->partner_id, $this->default_callback, $this->api_key, $this->sid_server);
             return $id_api->submit_job($partner_params, $id_info, $options);
         }
+        validateImageParams($image_details);
+        validateOptions($options);
 
         if ($options['signature']) {
             $sec_params = $this->sig_class->generate_signature();
@@ -181,9 +97,13 @@ class SmileIdentityCore
         }
 
         $response_body = $this->call_prep_upload($partner_params, $options, $sec_params);
-        $code = $response_body['code'];
+        $code = array_value_by_key('code', $response_body);
         if ($code != '2202') {
-            throw new Exception($response_body['error']);
+            $message = array_value_by_key('error', $response_body);
+            if (!$message) {
+                $message = array_value_by_key('message', $response_body);
+            }
+            throw new Exception($message);
         }
 
         $upload_url = $response_body['upload_url'];
@@ -191,18 +111,14 @@ class SmileIdentityCore
         $file_path = $this->generate_zip_file($response_body, $id_info, $image_details, $partner_params, $sec_params, $options);
         $response = $this->upload_file($upload_url, $file_path);
 
-        $result = array('success' => false, "smile_job_id" => $smile_job_id);
+        if ($response["statusCode"] != 200) {
+            throw new Exception("Failed to upload zip. status code: {$response["statusCode"]}");
+        }
 
         if ($options['return_job_status']) {
-            for ($i = 1; $i <= 20; $i += 1) {
-                sleep(DEFAULT_JOB_STATUS_SLEEP);
-                $response = $this->query_job_status($partner_params, $options);
-                if ($response['job_complete'] == true) {
-                    $result['success'] = true;
-                    break;
-                }
-            }
-            $result = array_merge($result, $response);
+            $result = $this->poll_job_status($partner_params, $options);
+        } else {
+            $result = array('success' => true, "smile_job_id" => $smile_job_id);
         }
         return $result;
     }
@@ -212,6 +128,7 @@ class SmileIdentityCore
      * @param $options
      * @return array
      * @throws GuzzleException
+     * @throws Exception
      */
     public function query_job_status($partner_params, $options): array
     {
@@ -232,17 +149,20 @@ class SmileIdentityCore
 
         $json_data = json_encode($data, JSON_PRETTY_PRINT);
 
-        $client = new Client([
-            'base_uri' => $this->sid_server,
-            'timeout' => 5.0
-        ]);
-        $resp = $client->post('job_status',
-            [
-                'content-type' => 'application/json',
-                \GuzzleHttp\RequestOptions::JSON => $json_data
-            ]
-        );
-        return json_decode($resp->getBody()->getContents(), true);
+        $client = new Client(['base_uri' => $this->sid_server]);
+        $resp = $client->post('job_status', ['content-type' => 'application/json', 'body' => $json_data]);
+        $result = json_decode($resp->getBody()->getContents(), true);
+
+        if ($options['signature']) {
+            $valid = $this->sig_class->confirm_signature($result['timestamp'], $result['signature']);
+        } else {
+            $valid = $this->sig_class->confirm_sec_key($result['signature']);
+        }
+        if ($valid) {
+            return $result;
+        } else {
+            throw new Exception("Unable to confirm validity of the job_status response");
+        }
     }
 
     /**
@@ -288,10 +208,7 @@ class SmileIdentityCore
      */
     private function call_prep_upload($partner_params, $options, $sec_params): array
     {
-        if ($options['optional_callback'] == null)
-            $callback = $this->default_callback;
-        else
-            $callback = $options['optional_callback'];
+        $callback = $options['optional_callback'];
 
         $data = array(
             'callback_url' => $callback,
@@ -317,17 +234,19 @@ class SmileIdentityCore
             );
             return json_decode($resp->getBody()->getContents(), true);
         } catch (RequestException $e) {
-            return json_decode($e->getResponse()->getBody()->getContents(), true);
+            $resp = $e->getResponse();
+            $result = json_decode($resp->getBody()->getContents(), true);
+            $result['statusCode'] = $resp->getStatusCode();
+            return $result;
         }
     }
 
     /**
      * @param $upload_url
      * @param $filename
-     * @return array
      * @throws GuzzleException
      */
-    private function upload_file($upload_url, $filename): array
+    private function upload_file($upload_url, $filename)
     {
         $body = Psr7\Utils::tryFopen($filename, 'r');
         $client = new Client([]);
@@ -336,7 +255,9 @@ class SmileIdentityCore
         ]]);
 
         unlink($filename);
-        return json_decode($resp->getBody()->getContents(), true);
+        $result = json_decode($resp->getBody()->getContents(), true);
+        $result["statusCode"] = $resp->getStatusCode();
+        return $result;
     }
 
     /**
@@ -350,12 +271,7 @@ class SmileIdentityCore
      */
     private function configure_info_json($prep_upload_response_array, $id_info, $images, $partner_params, $sec_param, $options)
     {
-
-        if ($options['optional_callback'] == "")
-            $callback = $this->default_callback;
-        else
-            $callback = $options['optional_callback'];
-
+        $callback = $options['optional_callback'];
         $misc = array(
             "retry" => "false",
             "partner_params" => $partner_params,
@@ -416,5 +332,39 @@ class SmileIdentityCore
             $zip->close();
         }
         return $file;
+    }
+
+    /**
+     * @param $_options
+     * @return array
+     */
+    private function getOptions($_options): array
+    {
+        $options = array_merge(default_options, $_options);
+        if ($options['optional_callback'] == null || strlen($options["optional_callback"]) == 0) {
+            $options["optional_callback"] = $this->default_callback;
+        }
+        return $options;
+    }
+
+    /**
+     * @param $partner_params
+     * @param array $options
+     * @param array $response
+     * @param $smile_job_id
+     * @return array
+     * @throws GuzzleException
+     */
+    private function poll_job_status($partner_params, array $options): array
+    {
+        for ($i = 1; $i <= 20; $i += 1) {
+            sleep(DEFAULT_JOB_STATUS_SLEEP);
+            $result = $this->query_job_status($partner_params, $options);
+            if ($result['job_complete'] == true) {
+                $result['success'] = true;
+                break;
+            }
+        }
+        return $result;
     }
 }
