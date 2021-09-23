@@ -30,6 +30,7 @@ class SmileIdentityCore
     private string $api_key;
     private string $default_callback;
     private string $sid_server;
+    private Client $client;
 
     /**
      * WebApi constructor.
@@ -54,6 +55,7 @@ class SmileIdentityCore
         } else {
             $this->sid_server = $sid_server;
         }
+        $this->client = new Client(['base_uri' => $this->sid_server]);
     }
 
     public function get_version(): string
@@ -62,10 +64,14 @@ class SmileIdentityCore
     }
 
     /**
+     * @param bool $use_signature
      * @return array
      */
-    public function generate_sec_key(): array
+    public function generate_sec_key(bool $use_signature): array
     {
+        if ($use_signature){
+            return $this->sig_class->generate_signature();
+        }
         return $this->sig_class->generate_sec_key();
     }
 
@@ -149,7 +155,7 @@ class SmileIdentityCore
 
         $json_data = json_encode($data, JSON_PRETTY_PRINT);
 
-        $client = new Client(['base_uri' => $this->sid_server]);
+        $client = $this->getClient();
         $resp = $client->post('job_status', ['content-type' => 'application/json', 'body' => $json_data]);
         $result = json_decode($resp->getBody()->getContents(), true);
 
@@ -158,11 +164,12 @@ class SmileIdentityCore
         } else {
             $valid = $this->sig_class->confirm_sec_key($result['signature']);
         }
-        if ($valid) {
-            return $result;
-        } else {
+
+        if (!$valid) {
             throw new Exception("Unable to confirm validity of the job_status response");
         }
+
+        return $result;
     }
 
     /**
@@ -221,12 +228,8 @@ class SmileIdentityCore
         $data = array_merge($sec_params, $data);
 
         $json_data = json_encode($data, JSON_PRETTY_PRINT);
-        $client = new Client([
-            'base_uri' => $this->sid_server,
-            'timeout' => 5.0
-        ]);
         try {
-            $resp = $client->post('upload',
+            $resp = $this->client->post('upload',
                 [
                     'content-type' => 'application/json',
                     'body' => $json_data
@@ -249,8 +252,7 @@ class SmileIdentityCore
     private function upload_file($upload_url, $filename)
     {
         $body = Psr7\Utils::tryFopen($filename, 'r');
-        $client = new Client([]);
-        $resp = $client->request('PUT', $upload_url, ['body' => $body, 'headers' => [
+        $resp = $this->getClient()->request('PUT', $upload_url, ['body' => $body, 'headers' => [
             'Content-Type' => 'application/zip',
         ]]);
 
@@ -366,5 +368,21 @@ class SmileIdentityCore
             }
         }
         return $result;
+    }
+
+    /**
+     * @return Client
+     */
+    public function getClient(): Client
+    {
+        return $this->client;
+    }
+
+    /**
+     * @param Client $client
+     */
+    public function setClient(Client $client): void
+    {
+        $this->client = $client;
     }
 }

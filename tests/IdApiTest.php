@@ -4,12 +4,12 @@ declare(strict_types=1);
 require 'lib/IdApi.php';
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\Exception\GuzzleException;
-use PHPUnit\Framework\TestCase;
 use Ouzo\Utilities\Clock;
+use PHPUnit\Framework\TestCase;
 
 final class IdApiTest extends TestCase
 {
@@ -53,7 +53,7 @@ final class IdApiTest extends TestCase
             'language' => 'php',
             'callback_url' => $this->default_callback,
             'partner_params' => $this->partner_params,
-            'sec_key' => $signature->generate_sec_key()[0],
+            'sec_key' => $signature->generate_sec_key()["sec_key"],
             'timestamp' => Clock::now()->getTimestamp(),
             'partner_id' => $this->partner_id
         );
@@ -74,7 +74,7 @@ final class IdApiTest extends TestCase
 
         $handler = HandlerStack::create($mock);
         $client = new Client(['handler' => $handler]);
-        $job = $this->idApi->submit_job($this->partner_params, $this->id_info, true, $client);
+        $job = $this->idApi->submit_job($this->partner_params, $this->id_info, ['use_async' => true], $client);
         $this->assertEquals(200, $job->getStatusCode());
         $this->assertEquals('{"success":true}', $job->getBody()->getContents());
     }
@@ -93,7 +93,7 @@ final class IdApiTest extends TestCase
 
         $handler = HandlerStack::create($mock);
         $client = new Client(['handler' => $handler]);
-        $job = $this->idApi->submit_job($this->partner_params, $this->id_info, false, $client);
+        $job = $this->idApi->submit_job($this->partner_params, $this->id_info, ['use_async' => false], $client);
         $this->assertEquals(200, $job->getStatusCode());
         $this->assertEquals('{"success":true}', $job->getBody()->getContents());
     }
