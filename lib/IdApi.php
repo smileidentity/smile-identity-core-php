@@ -54,7 +54,6 @@ class IdApi
      */
     public function submit_job($partner_params, $id_info, $options, $guzzle = null): ResponseInterface
     {
-        validateOptions($options);
         $user_async = array_value_by_key("user_async", $options);
         $signature = array_value_by_key("signature", $options);
 
