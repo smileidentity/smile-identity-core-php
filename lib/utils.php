@@ -96,7 +96,7 @@ function validateOptions($options)
             throw new Exception("$key need to be a string");
         }
     }
-    if (!strlen($options["optional_callback"]) && !$options['return_job_status']) {
+    if (!strlen(array_value_by_key("optional_callback", $options)) && !array_value_by_key("return_job_status", $options)) {
         throw new Exception("Please choose to either get your response via the callback or job status query");
     }
 }

@@ -55,7 +55,10 @@ class IdApi
     public function submit_job($partner_params, $id_info, $options, $guzzle = null): ResponseInterface
     {
         validateOptions($options);
-        if ($options['signature']) {
+        $user_async = array_value_by_key("user_async", $options);
+        $signature = array_value_by_key("signature", $options);
+
+        if ($signature) {
             $sec_params = $this->sig_class->generate_signature();
         } else {
             $sec_params = $this->sig_class->generate_sec_key();
@@ -70,7 +73,7 @@ class IdApi
         $data = array_merge($data, $id_info, $sec_params);
         $json_data = json_encode($data, JSON_PRETTY_PRINT);
         $client = is_null($guzzle) ? new Client(['base_uri' => $this->sid_server, 'timeout' => 5.0]) : $guzzle;
-        $url = $options['user_async'] ? 'async_id_verification' : 'id_verification';
+        $url = $user_async ? 'async_id_verification' : 'id_verification';
         return $client->post($url, [
             'content-type' => 'application/json',
             'body' => $json_data
