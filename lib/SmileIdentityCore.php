@@ -210,7 +210,7 @@ class SmileIdentityCore
      * @param $partner_params
      * @param $options
      * @param $sec_params
-     * @return ResponseInterface
+     * @return array
      * @throws GuzzleException
      */
     private function call_prep_upload($partner_params, $options, $sec_params): array
