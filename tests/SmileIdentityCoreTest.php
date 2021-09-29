@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-require 'lib/SmileIdentityCore.php';
+require '../lib/SmileIdentityCore.php';
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
@@ -175,5 +175,28 @@ final class SmileIdentityCoreTest extends TestCase
         $timestamp = Clock::now()->getTimestamp();
         $sec_key = $this->sic->generate_sec_key(false);
         $this->assertEquals($timestamp, $sec_key["timestamp"]);
+    }
+    
+    public function testGetWebToken(): void
+    {
+        $expectedResult = [
+            "success" => "true",
+            "token" => "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXJ0bmVyX3BhcmFtcyI6eyJ1c2VyX2lkIjoiZTFkNDZkZTYtM2NjOS00MDMyLWI3ZjEtZDRlNGViZTNlMWFhIiwiam9iX2lkIjoiNDBmYjNlN2MtMjlmZS00YjRlLTlhNTAtOGE2MzI4YmU5OTY2Iiwiam9iX3R5cGUiOjJ9LCJjYWxsYmFja191cmwiOiJodHRwczovL3Rlc3Qtc21pbGVpZC5oZXJva3VhcHAuY29tL2FwaS92Mi8xMDQ2L3Bvc3RiYWNrL3VwZGF0ZV9zdGF0dXMvIiwiaWF0IjoxNjMwNjg2MTAxLCJleHAiOjE2MzIzMTY3ODB9.GBgrp8K0LsJor6lGPGZNdTVfC9KDXDsCDUAmOR3Hqgw"
+        ];
+        
+        $mock = new MockHandler([
+            new Response(200, [], json_encode($expectedResult))
+        ]);
+        
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler]);
+        $this->sic->setClient($client);
+        
+        $timestamp = Clock::now()->getTimestamp();
+        $user_id = "<USER_ID>";
+        $job_id = "<JOB_ID>";
+        $product = "identity_verification";
+        $result = $this->sic->get_web_token($timestamp, $user_id, $job_id, $product);
+        $this->assertEquals($result, $result);
     }
 }

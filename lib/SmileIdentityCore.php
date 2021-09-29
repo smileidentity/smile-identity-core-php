@@ -9,8 +9,6 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7;
-use Psr\Http\Message\ResponseInterface;
-
 
 const VERSION = '1.1.0';
 const DEFAULT_JOB_STATUS_SLEEP = 2;
@@ -182,6 +180,45 @@ class SmileIdentityCore
     {
         return $this->query_job_status($partner_params, $options);
     }
+    
+    /***
+     *  Will query the backend for web session token with a specific timestamp
+     * @param timestamp the timestamp to generate the token from
+     * @param user_id
+     * @param job_id
+     * @param product_type - Literal value of any of the 6 options specified by the WEB_PRODUCT_TYPE enum
+     * @return 
+     * @throws GuzzleException
+     */
+    public function get_web_token($timestamp, $user_id, $job_id, $product_type): array
+    {
+        $data = array(
+            'timestamp' => date(DateTimeInterface::ISO8601, $timestamp),
+            'callback_url' => $this->default_callback,
+            'partner_id' => $this->partner_id,
+            'user_id' => $user_id,
+            'job_id' => $job_id,
+            'product' => $product_type,
+            'signature' => $this->sig_class->generate_signature($timestamp),
+        );
+        
+        $json_data = json_encode($data, JSON_PRETTY_PRINT);
+        
+        try {
+            $resp = $this->client->post('token',
+                [
+                    'content-type' => 'application/json',
+                    'body' => $json_data
+                ]
+                );
+            return json_decode($resp->getBody()->getContents(), true);
+        } catch (RequestException $e) {
+            $resp = $e->getResponse();
+            $result = json_decode($resp->getBody()->getContents(), true);
+            $result['statusCode'] = $resp->getStatusCode();
+            return $result;
+        }
+    }
 
     private function configure_image_payload($image_details): array
     {
@@ -210,7 +247,7 @@ class SmileIdentityCore
      * @param $partner_params
      * @param $options
      * @param $sec_params
-     * @return ResponseInterface
+     * @return 
      * @throws GuzzleException
      */
     private function call_prep_upload($partner_params, $options, $sec_params): array

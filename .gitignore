@@ -329,3 +329,9 @@ ASALocalRun/
 
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
+
+# Avoid sending Eclipse-generated files
+.classpath
+.project
+.settings/
+.buildpath
