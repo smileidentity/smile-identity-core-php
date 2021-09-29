@@ -186,8 +186,8 @@ class SmileIdentityCore
      * @param timestamp the timestamp to generate the token from
      * @param user_id
      * @param job_id
-     * @param product_type - Literal value of any of the 6 options specified by the WEB_PRODUCT_TYPE enum
-     * @return 
+     * @param product_type - Literal value of any of the 6 product type options
+     * @return array
      * @throws GuzzleException
      */
     public function get_web_token($timestamp, $user_id, $job_id, $product_type): array
@@ -247,7 +247,7 @@ class SmileIdentityCore
      * @param $partner_params
      * @param $options
      * @param $sec_params
-     * @return 
+     * @return array
      * @throws GuzzleException
      */
     private function call_prep_upload($partner_params, $options, $sec_params): array

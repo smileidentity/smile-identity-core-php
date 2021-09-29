@@ -181,7 +181,7 @@ final class SmileIdentityCoreTest extends TestCase
     {
         $expectedResult = [
             "success" => "true",
-            "token" => "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXJ0bmVyX3BhcmFtcyI6eyJ1c2VyX2lkIjoiZTFkNDZkZTYtM2NjOS00MDMyLWI3ZjEtZDRlNGViZTNlMWFhIiwiam9iX2lkIjoiNDBmYjNlN2MtMjlmZS00YjRlLTlhNTAtOGE2MzI4YmU5OTY2Iiwiam9iX3R5cGUiOjJ9LCJjYWxsYmFja191cmwiOiJodHRwczovL3Rlc3Qtc21pbGVpZC5oZXJva3VhcHAuY29tL2FwaS92Mi8xMDQ2L3Bvc3RiYWNrL3VwZGF0ZV9zdGF0dXMvIiwiaWF0IjoxNjMwNjg2MTAxLCJleHAiOjE2MzIzMTY3ODB9.GBgrp8K0LsJor6lGPGZNdTVfC9KDXDsCDUAmOR3Hqgw"
+            "token" => "<WEB_TOKEN>"
         ];
         
         $mock = new MockHandler([
@@ -195,7 +195,7 @@ final class SmileIdentityCoreTest extends TestCase
         $timestamp = Clock::now()->getTimestamp();
         $user_id = "<USER_ID>";
         $job_id = "<JOB_ID>";
-        $product = "identity_verification";
+        $product = "<PRODUCT_TYPE>";
         $result = $this->sic->get_web_token($timestamp, $user_id, $job_id, $product);
         $this->assertEquals($result, $result);
     }
