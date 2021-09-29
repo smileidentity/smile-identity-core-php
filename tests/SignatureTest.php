@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-require '../lib/Signature.php';
+require 'lib/Signature.php';
 
 use Ouzo\Utilities\Clock;
 use PHPUnit\Framework\TestCase;
