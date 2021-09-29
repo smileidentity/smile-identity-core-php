@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-require '../lib/SmileIdentityCore.php';
+require 'lib/SmileIdentityCore.php';
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
