@@ -197,6 +197,6 @@ final class SmileIdentityCoreTest extends TestCase
         $job_id = "<JOB_ID>";
         $product = "<PRODUCT_TYPE>";
         $result = $this->sic->get_web_token($timestamp, $user_id, $job_id, $product);
-        $this->assertEquals($result, $result);
+        $this->assertEquals($result, $expectedResult);
     }
 }
