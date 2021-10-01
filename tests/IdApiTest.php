@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-require '../lib/IdApi.php';
+require 'lib/IdApi.php';
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
