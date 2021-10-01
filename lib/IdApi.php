@@ -16,6 +16,7 @@ class IdApi
         'https://api.smileidentity.com/v1'
     ];
     public Signature $sig_class;
+    private Client $client;
     private string $partner_id;
     private string $default_callback;
     private string $sid_server;
@@ -43,6 +44,14 @@ class IdApi
             $this->sid_server = $sid_server;
         }
     }
+    
+    /**
+     * @param Client $client
+     */
+    public function setClient(Client $client): void
+    {
+        $this->client = $client;
+    }
 
     /**
      * @param $partner_params
@@ -53,7 +62,7 @@ class IdApi
      * @throws GuzzleException
      * @throws Exception
      */
-    public function submit_job($partner_params, $id_info, $options, $guzzle = null): ResponseInterface
+    public function submit_job($partner_params, $id_info, $options): ResponseInterface
     {
         $user_async = array_value_by_key("user_async", $options);
         $signature = array_value_by_key("signature", $options);
@@ -72,7 +81,7 @@ class IdApi
         );
         $data = array_merge($data, $id_info, $sec_params);
         $json_data = json_encode($data, JSON_PRETTY_PRINT);
-        $client = new Client(['base_uri' => $this->sid_server, 'timeout' => 5.0]);
+        $client = is_null($this->client) ? new Client(['base_uri' => $this->sid_server, 'timeout' => 5.0]) : $this->client;
         $url = $user_async ? 'async_id_verification' : 'id_verification';
         return $client->post($url, [
             'content-type' => 'application/json',

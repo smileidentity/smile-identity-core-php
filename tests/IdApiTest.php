@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-require 'lib/IdApi.php';
+require '../lib/IdApi.php';
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
@@ -74,7 +74,8 @@ final class IdApiTest extends TestCase
 
         $handler = HandlerStack::create($mock);
         $client = new Client(['handler' => $handler]);
-        $job = $this->idApi->submit_job($this->partner_params, $this->id_info, ['use_async' => true], $client);
+        $this->idApi->setClient($client);
+        $job = $this->idApi->submit_job($this->partner_params, $this->id_info, ['use_async' => true]);
         $this->assertEquals(200, $job->getStatusCode());
         $this->assertEquals('{"success":true}', $job->getBody()->getContents());
     }
@@ -93,7 +94,8 @@ final class IdApiTest extends TestCase
 
         $handler = HandlerStack::create($mock);
         $client = new Client(['handler' => $handler]);
-        $job = $this->idApi->submit_job($this->partner_params, $this->id_info, ['use_async' => false], $client);
+        $this->idApi->setClient($client);
+        $job = $this->idApi->submit_job($this->partner_params, $this->id_info, ['use_async' => false]);
         $this->assertEquals(200, $job->getStatusCode());
         $this->assertEquals('{"success":true}', $job->getBody()->getContents());
     }
