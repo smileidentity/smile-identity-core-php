@@ -48,6 +48,7 @@ class IdApi
      * @param $partner_params
      * @param $id_info
      * @param $use_async
+     * @param $options
      * @return ResponseInterface
      * @throws GuzzleException
      * @throws Exception
@@ -71,7 +72,7 @@ class IdApi
         );
         $data = array_merge($data, $id_info, $sec_params);
         $json_data = json_encode($data, JSON_PRETTY_PRINT);
-        $client = is_null($guzzle) ? new Client(['base_uri' => $this->sid_server, 'timeout' => 5.0]) : $guzzle;
+        $client = new Client(['base_uri' => $this->sid_server, 'timeout' => 5.0]);
         $url = $user_async ? 'async_id_verification' : 'id_verification';
         return $client->post($url, [
             'content-type' => 'application/json',

@@ -169,6 +169,37 @@ class SmileIdentityCore
 
         return $result;
     }
+    
+    
+    /**
+     * @return array
+     * @throws GuzzleException
+     * @throws Exception
+     */
+    public function query_smile_id_services(): array {
+        try {
+            $resp = $this->client->get('services',
+                [
+                    'content-type' => 'application/json'
+                ]
+            );
+            
+            $status_code = $resp->getStatusCode();
+            $resp_result = $resp->getBody()->getContents();
+            
+            if ($status_code !== 200) {
+                $msg = "Failed to get entity from {$this->sid_server}/services, response={statusCode}:{$resp->getReasonPhrase()} - {$resp_result}";
+                throw new Exception($msg);
+            }
+            
+            return json_decode($resp_result, true);
+        } catch (RequestException $e) {
+            $resp = $e->getResponse();
+            $result = json_decode(getReasonPhrase, true);
+            $result['statusCode'] = $resp->getStatusCode();
+            return $result;
+        }
+    }
 
     /**
      * @param $partner_params

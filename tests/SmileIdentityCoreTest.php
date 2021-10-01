@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-require 'lib/SmileIdentityCore.php';
+require '../lib/SmileIdentityCore.php';
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
@@ -197,6 +197,25 @@ final class SmileIdentityCoreTest extends TestCase
         $job_id = "<JOB_ID>";
         $product = "<PRODUCT_TYPE>";
         $result = $this->sic->get_web_token($timestamp, $user_id, $job_id, $product);
+        $this->assertEquals($result, $expectedResult);
+    }
+    
+    public function testSmileServices(): void
+    {
+        $expectedResult = [
+            "success" => "true",
+            "token" => "<WEB_TOKEN>"
+        ];
+        
+        $mock = new MockHandler([
+            new Response(200, [], json_encode($expectedResult))
+        ]);
+        
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler]);
+        $this->sic->setClient($client);
+        
+        $result = $this->sic->query_smile_id_services();
         $this->assertEquals($result, $expectedResult);
     }
 }
