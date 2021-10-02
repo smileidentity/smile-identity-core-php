@@ -9,6 +9,7 @@
 *.userosscache
 *.sln.docstates
 
+/vendor/
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
@@ -328,3 +329,12 @@ ASALocalRun/
 
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
+
+# Avoid sending Eclipse-generated files
+.classpath
+.project
+.settings/
+.buildpath
+
+# Any OS-related files
+.DS_Store

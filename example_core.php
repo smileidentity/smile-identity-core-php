@@ -4,8 +4,6 @@
 require 'vendor/autoload.php';
 include 'SmileIdentityCore.php';
 
-$sid_core = new sid\SmileIdentityCore;
-
 $partner_id = '<Put your 3 digit partner ID here>';
 $default_callback = '<Put your default callback url here>';
 // You can download your API key from the Smile Identity portal.
@@ -14,8 +12,8 @@ $api_key = '<Put your base64 encoded API key here>';
 // Use '0' for the sandbox (test) server, use '1' for production server
 $sid_server = '0';
 
-// One time initialize call to setup required
-$sid_core->initialize($partner_id,
+$sid_core = new SmileIdentityCore(
+    $partner_id,
     $default_callback,
     $api_key,
     $sid_server
@@ -36,7 +34,8 @@ $partner_params = array(
     // 8 for updating an registered photo
     'job_type' => <1 | 2 | 4 | 8>,
      // You can add as many key value pairs as you line but all MUST be strings.
-    'optional_info' => 'PHP Test Data'
+    'optional_info' => 'PHP Test Data',
+    'signature' => <true | false>
     );
 
 // Create options
@@ -63,7 +62,7 @@ $selfie_image_detail = array(
     'image_type_id' => 0, // Selfie image jpg or png
     'image' => $selfie_filename
     );
-// ID card image can be ommited if selfie comparison to issuer image is desired
+// ID card image can be omitted if selfie comparison to issuer image is desired
 $id_card_image_detail = array(
     'image_type_id' => 1, // ID card image jpg or png
     'image' => $id_card_filename
@@ -96,18 +95,16 @@ $result = $sid_core->submit_job($partner_params, $image_details, $id_info, $opti
 // Smile ID ID Verification API usage
 //
 
-$sid_idapi = new sid\IdApi;
-
-// If use_async is false $result contains the returned ID information
-// If true then the ID information will be sent to the callback specified - >> RECOMENDED <<
-$use_async =  false;
-
-// One time initialize call to setup required
-$sid_idapi->initialize($partner_id,
+$sid_idapi = new IdApi(
+    $partner_id,
     $default_callback, // Used if $use_async is true otherwise should be ""
     $api_key,
     $sid_server
 );
+
+// If use_async is false $result contains the returned ID information
+// If true then the ID information will be sent to the callback specified - >> RECOMMENDED <<
+$use_async =  false;
 
 // Create required tracking parameters
 // Every communication between your server and the Smile Identity servers contain these parameters.
