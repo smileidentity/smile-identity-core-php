@@ -5,9 +5,10 @@
 	"homepage" : "https://github.com/smileidentity/smile-identity-core-php",
 	"license" : "MIT",
 	"authors" : [{
-        "name" : "Smile Identity",
-        "email" : "support@smileidentity.com"
-    }],
+			"name" : "Smile Identity",
+			"email" : "support@smileidentity.com"
+		}
+	],
 	"require" : {
 		"php" : "~7.4",
 		"ext-curl" : "*",
