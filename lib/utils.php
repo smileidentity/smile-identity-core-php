@@ -47,7 +47,7 @@ function validateIdParams($id_params, $job_type)
         return;
     }
     $required_fields = ["country", "id_type"];
-    if ($job_type !=6){
+    if ($job_type != 6) {
         $required_fields = array_merge($required_fields, ["id_number"]);
     }
     foreach ($required_fields as $key) {
@@ -72,6 +72,7 @@ function validateImageParams($image_details, $job_type, $use_enrolled_image)
     if (gettype($image_details) !== "array") {
         throw new Exception('Image details needs to be an array');
     }
+    $has_id_image = false;
     $has_selfie = false;
     foreach ($image_details as $item) {
         if (gettype($item) !== "array"
@@ -79,11 +80,17 @@ function validateImageParams($image_details, $job_type, $use_enrolled_image)
             || !array_key_exists("image", $item)) {
             throw new Exception("Image details content must to be an array with 'image_type_id' and 'image' has keys");
         }
+        if ($item["image_type_id"] === 1 || $item["image_type_id"] === 3) {
+            $has_id_image = true;
+        }
         if ($item["image_type_id"] === 0 || $item["image_type_id"] === 2) {
             $has_selfie = true;
         }
     }
-    if (!($has_selfie || ($job_type && $use_enrolled_image))) {
+    if ($job_type == 6 && !$has_id_image){
+        throw new Exception('You are attempting to complete a job type 6 without providing an id card image');
+    }
+    if (!($has_selfie || ($job_type == 6 && $use_enrolled_image))) {
         throw new Exception('You need to send through at least one selfie image');
     }
 }
