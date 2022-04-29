@@ -80,18 +80,18 @@ class SmileIdentityCore
     public function submit_job($partner_params, $image_details, $id_info, $_options)
     {
         $options = $this->getOptions($_options);
+        $job_type = $partner_params['job_type'];
 
         //TODO: add data validation
         validatePartnerParams($partner_params);
-        validateIdParams($id_info);
+        validateIdParams($id_info, $job_type);
 
-        $job_type = $partner_params['job_type'];
 
         if ($job_type == 5) {
             $id_api = new IdApi($this->partner_id, $this->default_callback, $this->api_key, $this->sid_server);
             return $id_api->submit_job($partner_params, $id_info, $options);
         }
-        validateImageParams($image_details);
+        validateImageParams($image_details, $job_type, key_exists('use_enrolled_image', $options) && $options['use_enrolled_image']);
         validateOptions($options);
 
         if ($options['signature']) {
@@ -284,6 +284,11 @@ class SmileIdentityCore
     private function call_prep_upload($partner_params, $options, $sec_params): array
     {
         $callback = $options['optional_callback'];
+        $job_type = $partner_params['job_type'];
+        $use_enrolled_image = null;
+        if ($job_type == 6 && key_exists('use_enrolled_image', $options)) {
+            $use_enrolled_image = $options['use_enrolled_image'];
+        }
 
         $data = array(
             'callback_url' => $callback,
@@ -291,6 +296,7 @@ class SmileIdentityCore
             'model_parameters' => '',
             'partner_params' => $partner_params,
             'smile_client_id' => $this->partner_id,
+            'use_enrolled_image' => $use_enrolled_image
         );
 
         $data = array_merge($sec_params, $data);

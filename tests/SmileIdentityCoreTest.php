@@ -4,6 +4,7 @@ declare(strict_types=1);
 require 'lib/SmileIdentityCore.php';
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
@@ -68,7 +69,7 @@ final class SmileIdentityCoreTest extends TestCase
     }
 
     /**
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws GuzzleException
      */
 
     public function testSubmitJobUploadsZipFileWhenReturnJobStatusIsFalse(): void
@@ -112,7 +113,7 @@ final class SmileIdentityCoreTest extends TestCase
     }
 
     /**
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws GuzzleException
      */
     public function testSubmitJobUploadsZipFileWhenReturnJobStatusIsTrue(): void
     {
@@ -151,9 +152,8 @@ final class SmileIdentityCoreTest extends TestCase
     {
     }
 
-
     /**
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws GuzzleException
      */
     public function testSubmitJobShouldRaiseErrorWhenPreUploadFails()
     {
@@ -168,6 +168,179 @@ final class SmileIdentityCoreTest extends TestCase
         $this->sic->setClient($client);
 
         $this->sic->submit_job($this->partnerParams, $this->imageDetails, $this->idParams, $this->options);
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    public function testSubmitJobShouldRequireIdCardImageForJT6(): void
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage("You are attempting to complete a job type 6 without providing an id card image");
+        $resp_body = [
+            "upload_url" => "https://upload-url.com",
+            "ref_id" => "212-0000058873-dwhsn9nsax3onnbf8mc1rifirl44z",
+            "smile_job_id" => "0000058873",
+            "camera_config" => null,
+            "code" => 2202
+
+        ];
+        $partnerParams = [
+            "user_id" => "user-id",
+            "job_id" => "job-id",
+            "job_type" => 6,
+        ];
+        $idParams = [
+            "country" => "NG",
+            "id_type" => "PASSPORT",
+            "id_number" => "A00000000",
+        ];
+        $imageDetails = [["image_type_id" => 0, "image" => "base6image"]];
+        $secParam = $this->sic->generate_sec_key($this->options["signature"] );
+        $timestamp = $secParam['timestamp'];
+        $signature = $secParam['signature'];
+        $getStatusResult = '{"timestamp": "' . $timestamp . '", "signature": "' . $signature . '", "job_complete": true, "job_success": false, "code": "2302", "result": {}, "history": [], "image_links": {"selfie_image": "https://selfie-image.com"}}';
+
+        $mock = new MockHandler([
+            new Response(200, [], json_encode($resp_body)),
+            new Response(200, []),
+            new Response(200, [], $getStatusResult)
+        ]);
+
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler]);
+        $this->sic->setClient($client);
+
+        $this->sic->submit_job($partnerParams, $imageDetails, $idParams, $this->options);
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    public function testSubmitJobShouldRequireCountryInIdInfoForJT6(): void
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage("Please make sure that country is included in the id_info and has a value");
+        $resp_body = [
+            "upload_url" => "https://upload-url.com",
+            "ref_id" => "212-0000058873-dwhsn9nsax3onnbf8mc1rifirl44z",
+            "smile_job_id" => "0000058873",
+            "camera_config" => null,
+            "code" => 2202
+
+        ];
+        $partnerParams = [
+            "user_id" => "user-id",
+            "job_id" => "job-id",
+            "job_type" => 6,
+        ];
+        $idParams = [
+            "id_type" => "PASSPORT",
+            "id_number" => "A00000000",
+        ];
+        $imageDetails = [["image_type_id" => 0, "image" => "base6image"]];
+        $secParam = $this->sic->generate_sec_key($this->options["signature"] );
+        $timestamp = $secParam['timestamp'];
+        $signature = $secParam['signature'];
+        $getStatusResult = '{"timestamp": "' . $timestamp . '", "signature": "' . $signature . '", "job_complete": true, "job_success": false, "code": "2302", "result": {}, "history": [], "image_links": {"selfie_image": "https://selfie-image.com"}}';
+
+        $mock = new MockHandler([
+            new Response(200, [], json_encode($resp_body)),
+            new Response(200, []),
+            new Response(200, [], $getStatusResult)
+        ]);
+
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler]);
+        $this->sic->setClient($client);
+
+        $this->sic->submit_job($partnerParams, $imageDetails, $idParams, $this->options);
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    public function testSubmitJobShouldRequireIdTypeInIdInfoForJT6(): void
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage("Please make sure that id_type is included in the id_info and has a value");
+        $resp_body = [
+            "upload_url" => "https://upload-url.com",
+            "ref_id" => "212-0000058873-dwhsn9nsax3onnbf8mc1rifirl44z",
+            "smile_job_id" => "0000058873",
+            "camera_config" => null,
+            "code" => 2202
+
+        ];
+        $partnerParams = [
+            "user_id" => "user-id",
+            "job_id" => "job-id",
+            "job_type" => 6,
+        ];
+        $idParams = [
+            "country" => "NG",
+            "id_number" => "A00000000",
+        ];
+        $imageDetails = [["image_type_id" => 0, "image" => "base6image"]];
+        $secParam = $this->sic->generate_sec_key($this->options["signature"] );
+        $timestamp = $secParam['timestamp'];
+        $signature = $secParam['signature'];
+        $getStatusResult = '{"timestamp": "' . $timestamp . '", "signature": "' . $signature . '", "job_complete": true, "job_success": false, "code": "2302", "result": {}, "history": [], "image_links": {"selfie_image": "https://selfie-image.com"}}';
+
+        $mock = new MockHandler([
+            new Response(200, [], json_encode($resp_body)),
+            new Response(200, []),
+            new Response(200, [], $getStatusResult)
+        ]);
+
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler]);
+        $this->sic->setClient($client);
+
+        $this->sic->submit_job($partnerParams, $imageDetails, $idParams, $this->options);
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    public function testSubmitJobShouldRequiresAtLeastOneSelfieForJTOtherThanJT6(): void
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage("You need to send through at least one selfie image");
+        $resp_body = [
+            "upload_url" => "https://upload-url.com",
+            "ref_id" => "212-0000058873-dwhsn9nsax3onnbf8mc1rifirl44z",
+            "smile_job_id" => "0000058873",
+            "camera_config" => null,
+            "code" => 2202
+
+        ];
+        $partnerParams = [
+            "user_id" => "user-id",
+            "job_id" => "job-id",
+            "job_type" => 1,
+        ];
+        $idParams = [
+            "country" => "NG",
+            "id_number" => "A00000000",
+        ];
+        $imageDetails = [["image_type_id" => 1, "image" => "base6image"]];
+        $secParam = $this->sic->generate_sec_key($this->options["signature"] );
+        $timestamp = $secParam['timestamp'];
+        $signature = $secParam['signature'];
+        $getStatusResult = '{"timestamp": "' . $timestamp . '", "signature": "' . $signature . '", "job_complete": true, "job_success": false, "code": "2302", "result": {}, "history": [], "image_links": {"selfie_image": "https://selfie-image.com"}}';
+
+        $mock = new MockHandler([
+            new Response(200, [], json_encode($resp_body)),
+            new Response(200, []),
+            new Response(200, [], $getStatusResult)
+        ]);
+
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler]);
+        $this->sic->setClient($client);
+
+        $this->sic->submit_job($this->partnerParams, $imageDetails, $this->idParams, $this->options);
     }
 
     public function testGenerateKey(): void
