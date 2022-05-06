@@ -48,7 +48,7 @@ final class IdApiTest extends TestCase
             'phone_number' => '0726789065'
         );
 
-        $signature = new Signature($this->api_key, $this->partner_id);
+        $signature = new Signature($this->partner_id, $this->api_key);
         $this->data = array(
             'language' => 'php',
             'callback_url' => $this->default_callback,

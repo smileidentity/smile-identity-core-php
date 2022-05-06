@@ -15,24 +15,7 @@ final class SignatureTest extends TestCase
         Clock::freeze('2011-01-02 12:34');
         $partner_id = 212;
         $api_key = file_get_contents(__DIR__ . "/assets/ApiKey.pub");
-        $this->sig = new Signature($api_key, $partner_id);
-    }
-
-    public function testGenerateSecKey(): void
-    {
-        $generatedKey = $this->sig->generate_sec_key();
-        $timestamp = Clock::now()->getTimestamp();
-        $this->assertSame(2, count($generatedKey));
-        $this->assertSame($timestamp, $generatedKey['timestamp']);
-    }
-
-    public function testConfirmSecKey(): void
-    {
-        // skipping this because it was not working in phpunit
-        $this->markTestSkipped('must be revisited.');
-        $generatedKey = $this->sig->generate_sec_key();
-        $confirmSecKey = $this->sig->confirm_sec_key($generatedKey);
-        $this->assertTrue($confirmSecKey);;
+        $this->sig = new Signature($partner_id, $api_key);
     }
 
     public function testGenerateSignature()

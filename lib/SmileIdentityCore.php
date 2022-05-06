@@ -43,7 +43,7 @@ class SmileIdentityCore
         $this->partner_id = $partner_id;
         $this->api_key = $api_key;
         $this->default_callback = $default_callback;
-        $this->sig_class = new Signature($api_key, $partner_id);
+        $this->sig_class = new Signature($partner_id, $api_key);
         if (strlen($sid_server) == 1) {
             if (intval($sid_server) < 2) {
                 $this->sid_server = Config::SID_SERVERS[intval($sid_server)];
@@ -67,10 +67,7 @@ class SmileIdentityCore
      */
     public function generate_sec_key(bool $use_signature): array
     {
-        if ($use_signature){
-            return $this->sig_class->generate_signature();
-        }
-        return $this->sig_class->generate_sec_key();
+        return $this->sig_class->generate_signature();
     }
 
     /**
@@ -86,7 +83,6 @@ class SmileIdentityCore
         validatePartnerParams($partner_params);
         validateIdParams($id_info, $job_type);
 
-
         if ($job_type == 5) {
             $id_api = new IdApi($this->partner_id, $this->default_callback, $this->api_key, $this->sid_server);
             return $id_api->submit_job($partner_params, $id_info, $options);
@@ -94,11 +90,7 @@ class SmileIdentityCore
         validateImageParams($image_details, $job_type, key_exists('use_enrolled_image', $options) && $options['use_enrolled_image']);
         validateOptions($options);
 
-        if ($options['signature']) {
-            $sec_params = $this->sig_class->generate_signature();
-        } else {
-            $sec_params = $this->sig_class->generate_sec_key();
-        }
+        $sec_params = $this->sig_class->generate_signature();
 
         $response_body = $this->call_prep_upload($partner_params, $options, $sec_params);
         $code = array_value_by_key('code', $response_body);
@@ -136,11 +128,7 @@ class SmileIdentityCore
      */
     public function query_job_status($partner_params, $options): array
     {
-        if ($options['signature']) {
-            $sec_params = $this->sig_class->generate_signature();
-        } else {
-            $sec_params = $this->sig_class->generate_sec_key();
-        }
+        $sec_params = $this->sig_class->generate_signature();
 
         $data = array(
             'user_id' => $partner_params['user_id'],
@@ -156,12 +144,7 @@ class SmileIdentityCore
         $client = $this->getClient();
         $resp = $client->post('job_status', ['content-type' => 'application/json', 'body' => $json_data]);
         $result = json_decode($resp->getBody()->getContents(), true);
-
-        if ($options['signature']) {
-            $valid = $this->sig_class->confirm_signature($result['timestamp'], $result['signature']);
-        } else {
-            $valid = $this->sig_class->confirm_sec_key($result['signature']);
-        }
+        $valid = $this->sig_class->confirm_signature($result['timestamp'], $result['signature']);
 
         if (!$valid) {
             throw new Exception("Unable to confirm validity of the job_status response");
@@ -213,7 +196,7 @@ class SmileIdentityCore
     }
     
     /***
-     *  Will query the backend for web session token with a specific timestamp
+     * Queries the backend for web session token with a specific timestamp
      * @param timestamp the timestamp to generate the token from
      * @param user_id
      * @param job_id

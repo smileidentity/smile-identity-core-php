@@ -65,13 +65,7 @@ class IdApi
     public function submit_job($partner_params, $id_info, $options): ResponseInterface
     {
         $user_async = array_value_by_key("user_async", $options);
-        $signature = array_value_by_key("signature", $options);
-
-        if ($signature) {
-            $sec_params = $this->sig_class->generate_signature();
-        } else {
-            $sec_params = $this->sig_class->generate_sec_key();
-        }
+        $sec_params = $this->sig_class->generate_signature();
 
         $data = array(
             'language' => 'php',
