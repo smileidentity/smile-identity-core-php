@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "45bf2c737dbbb63ee7406ea84c1918db",
+    "content-hash": "b3fd3d7bab7f44d3a2103a33a5340843",
     "packages": [
         {
             "name": "guzzlehttp/guzzle",
@@ -328,6 +328,52 @@
                 }
             ],
             "time": "2022-03-20T21:55:58+00:00"
+        },
+        {
+            "name": "letsdrink/ouzo-goodies",
+            "version": "1.8.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/letsdrink/ouzo-goodies.git",
+                "reference": "cb7367f172643c91476fbb4e61f09ec013aa2a20"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/letsdrink/ouzo-goodies/zipball/cb7367f172643c91476fbb4e61f09ec013aa2a20",
+                "reference": "cb7367f172643c91476fbb4e61f09ec013aa2a20",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Ouzo\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ouzo developers",
+                    "email": "ouzo-framework@googlegroups.com"
+                }
+            ],
+            "description": "Utility classes, test assertions and mocking framework extracted from Ouzo framework.",
+            "homepage": "http://ouzoframework.org/",
+            "keywords": [
+                "TDD",
+                "asserts",
+                "mock",
+                "php",
+                "test",
+                "utilities",
+                "utils"
+            ],
+            "support": {
+                "source": "https://github.com/letsdrink/ouzo-goodies/tree/1.8.0"
+            },
+            "time": "2021-03-08T13:23:48+00:00"
         },
         {
             "name": "psr/http-client",
@@ -671,52 +717,6 @@
                 }
             ],
             "time": "2022-03-03T08:28:38+00:00"
-        },
-        {
-            "name": "letsdrink/ouzo-goodies",
-            "version": "1.8.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/letsdrink/ouzo-goodies.git",
-                "reference": "cb7367f172643c91476fbb4e61f09ec013aa2a20"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/letsdrink/ouzo-goodies/zipball/cb7367f172643c91476fbb4e61f09ec013aa2a20",
-                "reference": "cb7367f172643c91476fbb4e61f09ec013aa2a20",
-                "shasum": ""
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Ouzo\\": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Ouzo developers",
-                    "email": "ouzo-framework@googlegroups.com"
-                }
-            ],
-            "description": "Utility classes, test assertions and mocking framework extracted from Ouzo framework.",
-            "homepage": "http://ouzoframework.org/",
-            "keywords": [
-                "TDD",
-                "asserts",
-                "mock",
-                "php",
-                "test",
-                "utilities",
-                "utils"
-            ],
-            "support": {
-                "source": "https://github.com/letsdrink/ouzo-goodies/tree/1.8.0"
-            },
-            "time": "2021-03-08T13:23:48+00:00"
         },
         {
             "name": "myclabs/deep-copy",
