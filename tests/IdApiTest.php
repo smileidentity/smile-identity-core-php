@@ -53,7 +53,7 @@ final class IdApiTest extends TestCase
             'language' => 'php',
             'callback_url' => $this->default_callback,
             'partner_params' => $this->partner_params,
-            'sec_key' => $signature->generate_sec_key()["sec_key"],
+            'sec_key' => $signature->generate_signature()["signature"],
             'timestamp' => Clock::now()->getTimestamp(),
             'partner_id' => $this->partner_id
         );

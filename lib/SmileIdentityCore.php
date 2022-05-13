@@ -10,7 +10,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7;
 
-const VERSION = '1.1.0';
+const VERSION = '2.0.0';
 const DEFAULT_JOB_STATUS_SLEEP = 2;
 const default_options = array(
     'optional_callback' => '',
@@ -62,15 +62,19 @@ class SmileIdentityCore
     }
 
     /**
-     * @param bool $use_signature
+     * Generates signature based current timestamp
      * @return array
      */
-    public function generate_sec_key(bool $use_signature): array
+    public function generate_signature(): array
     {
         return $this->sig_class->generate_signature();
     }
 
     /**
+     * @param array $partner_params a key-value pair object containing partner's specified parameters
+     * @param array $image_details a key-value pair object containing details for each image to be uploaded along with the job
+     * @param array $id_info a key-value pair object containing user's specified ID information
+     * @param array $options a key-value pair object containing additional, optional parameters
      * @throws GuzzleException
      * @throws Exception
      */
@@ -120,8 +124,9 @@ class SmileIdentityCore
     }
 
     /**
-     * @param $partner_params
-     * @param $options
+     * Gets the status of a specific job
+     * @param array $partner_params a key-value pair object containing partner's specified parameters
+     * @param array $options a key-value pair object containing additional, optional parameters
      * @return array
      * @throws GuzzleException
      * @throws Exception
@@ -151,10 +156,10 @@ class SmileIdentityCore
         }
 
         return $result;
-    }
-    
+    } 
     
     /**
+     * Queries the list of Smile ID services
      * @return array
      * @throws GuzzleException
      * @throws Exception
@@ -185,8 +190,9 @@ class SmileIdentityCore
     }
 
     /**
-     * @param $partner_params
-     * @param $options
+     * Gets the status of a specific job
+     * @param array $partner_params a key-value pair object containing partner's specified parameters
+     * @param array $options a key-value pair object containing additional, optional parameters
      * @return mixed
      * @throws GuzzleException
      */
@@ -213,7 +219,7 @@ class SmileIdentityCore
             'user_id' => $user_id,
             'job_id' => $job_id,
             'product' => $product_type,
-            'signature' => $this->sig_class->generate_signature($timestamp),
+            'signature' => $this->sig_class->generate_signature($timestamp)
         );
         
         $json_data = json_encode($data, JSON_PRETTY_PRINT);
@@ -372,7 +378,6 @@ class SmileIdentityCore
      */
     private function generate_zip_file($response_body, $id_info, $images_info, $partner_params, $sec_param, $options): string
     {
-
         $info_json = $this->configure_info_json($response_body, $id_info, $images_info, $partner_params, $sec_param, $options);
         $file = tempnam(sys_get_temp_dir(), "selfie");
         $zip = new ZipArchive();

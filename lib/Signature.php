@@ -66,8 +66,8 @@ class Signature
     {
         $timestamp = $timestamp != null ? $timestamp : Clock::now()->format(DateTimeInterface::ISO8601);
         $message = $timestamp . $this->partner_id . "sid_request";
-        $sec_key = base64_encode(hash_hmac('sha256', $message, $this->api_key, true));
-        return array("signature" => $sec_key, "timestamp" => $timestamp);
+        $signature = base64_encode(hash_hmac('sha256', $message, $this->api_key, true));
+        return array("signature" => $signature, "timestamp" => $timestamp);
     }
 
     /**
