@@ -69,7 +69,7 @@ final class IdApiTest extends TestCase
         $json_data = json_encode($data, JSON_PRETTY_PRINT);
 
         $mock = new MockHandler([
-            new Response(200, ['body' => $json_data], '{"success":true}'),
+            new Response(200, [], '{"success":true}'),
         ]);
 
         $handler = HandlerStack::create($mock);
@@ -89,7 +89,7 @@ final class IdApiTest extends TestCase
         $json_data = json_encode($data, JSON_PRETTY_PRINT);
 
         $mock = new MockHandler([
-            new Response(200, ['body' => $json_data], '{"success":true}'),
+            new Response(200, [], '{"success":true}'),
         ]);
 
         $handler = HandlerStack::create($mock);

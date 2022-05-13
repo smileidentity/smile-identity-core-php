@@ -19,8 +19,8 @@ final class SmileIdentityCoreTest extends TestCase
     protected array $options;
     protected array $partnerParams;
 
-    protected int $sid_server = 0;
-    protected int $partner_id = 212;
+    protected string $sid_server = "0";
+    protected string $partner_id = "212";
 
     /**
      * @throws Exception

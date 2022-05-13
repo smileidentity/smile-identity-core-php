@@ -38,7 +38,7 @@ class SmileIdentityCore
      * @param $sid_server
      * @throws Exception
      */
-    public function __construct($partner_id, $default_callback, $api_key, $sid_server)
+    public function __construct(string $partner_id, string $default_callback, string $api_key, string $sid_server)
     {
         $this->partner_id = $partner_id;
         $this->api_key = $api_key;
