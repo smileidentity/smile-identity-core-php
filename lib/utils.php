@@ -9,7 +9,6 @@ function endsWith($haystack, $needle)
     return substr($haystack, -$length) === $needle;
 }
 
-
 /**
  * @throws Exception
  */
@@ -33,7 +32,6 @@ function validatePartnerParams($partner_params)
         throw new Exception("Please ensure job_type is a integer");
     }
 }
-
 
 /**
  * @throws Exception
@@ -120,4 +118,3 @@ function array_value_by_key($key, $array)
     } else {
         return null;
     }
-}
