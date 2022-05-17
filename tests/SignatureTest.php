@@ -21,7 +21,7 @@ final class SignatureTest extends TestCase
     public function testGenerateSignature()
     {
         $timestamp = Clock::now()->format(DateTimeInterface::ISO8601);
-        $signature = $this->sig->generate_signature();
+        $signature = $this->sig->generate_signature($timestamp);
         $this->assertSame(2, count($signature));
         $this->assertSame($timestamp, $signature['timestamp']);
     }

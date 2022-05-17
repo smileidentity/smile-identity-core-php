@@ -336,8 +336,8 @@ final class SmileIdentityCoreTest extends TestCase
 
     public function testGenerateSignature(): void
     {
-        $timestamp = Clock::now()->getTimestamp();
-        $signature = $this->sic->generate_signature();
+        $timestamp = Clock::now()->format(DateTimeInterface::ISO8601);
+        $signature = $this->sic->generate_signature($timestamp);
         $this->assertEquals($timestamp, $signature["timestamp"]);
     }
     
