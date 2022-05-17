@@ -59,7 +59,6 @@ class IdApi
      * Submits a job with specified partner parameters and ID information
      * @param array $partner_params a key-value pair object containing partner's specified parameters
      * @param array $id_info a key-value pair object containing user's specified ID information
-     * @param $use_async
      * @param array $options a key-value pair object containing additional, optional parameters
      * @return ResponseInterface
      * @throws GuzzleException
@@ -74,7 +73,9 @@ class IdApi
             'language' => 'php',
             'callback_url' => $this->default_callback,
             'partner_params' => $partner_params,
-            'partner_id' => $this->partner_id
+            'partner_id' => $this->partner_id,
+            'source_sdk' => 'PHP',
+            'source_sdk_version' => '2.0.0'
         );
         $data = array_merge($data, $id_info, $sec_params);
         $json_data = json_encode($data, JSON_PRETTY_PRINT);

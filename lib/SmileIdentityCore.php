@@ -141,6 +141,8 @@ class SmileIdentityCore
             'partner_id' => $this->partner_id,
             'image_links' => $options['return_image_links'],
             'history' => $options['return_history'],
+            'source_sdk' => 'PHP',
+            'source_sdk_version' => '2.0.0'
         );
         $data = array_merge($data, $sec_params);
 
@@ -219,7 +221,9 @@ class SmileIdentityCore
             'user_id' => $user_id,
             'job_id' => $job_id,
             'product' => $product_type,
-            'signature' => $this->sig_class->generate_signature($timestamp)
+            'signature' => $this->sig_class->generate_signature($timestamp),
+            'source_sdk' => 'PHP',
+            'source_sdk_version' => '2.0.0'
         );
         
         $json_data = json_encode($data, JSON_PRETTY_PRINT);
@@ -285,7 +289,9 @@ class SmileIdentityCore
             'model_parameters' => '',
             'partner_params' => $partner_params,
             'smile_client_id' => $this->partner_id,
-            'use_enrolled_image' => $use_enrolled_image
+            'use_enrolled_image' => $use_enrolled_image,
+            'source_sdk' => 'PHP',
+            'source_sdk_version' => '2.0.0'
         );
 
         $data = array_merge($sec_params, $data);
