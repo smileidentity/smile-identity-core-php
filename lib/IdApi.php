@@ -86,9 +86,10 @@ class IdApi
         $json_data = json_encode($data, JSON_PRETTY_PRINT);
         $client = is_null($this->client) ? new Client(['base_uri' => $this->sid_server, 'timeout' => 5.0]) : $this->client;
         $url = $user_async ? 'async_id_verification' : 'id_verification';
-        return $client->post($url, [
+        $resp = $client->post($url, [
             'content-type' => 'application/json',
             'body' => $json_data
         ]);
+        return json_decode($resp->getBody()->getContents(), true);
     }
 }
