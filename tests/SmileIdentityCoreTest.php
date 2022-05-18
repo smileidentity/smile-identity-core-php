@@ -19,8 +19,8 @@ final class SmileIdentityCoreTest extends TestCase
     protected array $options;
     protected array $partnerParams;
 
-    protected int $sid_server = 0;
-    protected int $partner_id = 212;
+    protected string $sid_server = "0";
+    protected string $partner_id = "212";
 
     /**
      * @throws Exception
@@ -65,7 +65,7 @@ final class SmileIdentityCoreTest extends TestCase
     public function testGetVersion(): void
     {
         $version = $this->sic->get_version();
-        $this->assertEquals('1.1.0', $version);
+        $this->assertEquals('3.1.0', $version);
     }
 
     /**
