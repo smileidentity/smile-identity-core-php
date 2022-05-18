@@ -45,6 +45,7 @@ class IdApi
         } else {
             $this->sid_server = $sid_server;
         }
+        $this->client = new Client(['base_uri' => $this->sid_server]);
     }
     
     /**
