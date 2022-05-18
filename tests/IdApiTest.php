@@ -76,8 +76,7 @@ final class IdApiTest extends TestCase
         $client = new Client(['handler' => $handler]);
         $this->idApi->setClient($client);
         $job = $this->idApi->submit_job($this->partner_params, $this->id_info, ['use_async' => true]);
-        $this->assertEquals(200, $job->getStatusCode());
-        $this->assertEquals('{"success":true}', $job->getBody()->getContents());
+        $this->assertEquals(array("success" => true), $job);
     }
 
     /**
@@ -96,7 +95,6 @@ final class IdApiTest extends TestCase
         $client = new Client(['handler' => $handler]);
         $this->idApi->setClient($client);
         $job = $this->idApi->submit_job($this->partner_params, $this->id_info, ['use_async' => false]);
-        $this->assertEquals(200, $job->getStatusCode());
-        $this->assertEquals('{"success":true}', $job->getBody()->getContents());
+        $this->assertEquals(array("success" => true), $job);
     }
 }

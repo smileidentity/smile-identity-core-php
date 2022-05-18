@@ -13,10 +13,6 @@ require 'vendor/autoload.php';
 
 class IdApi
 {
-    const SID_SERVERS = [
-        'https://testapi.smileidentity.com/v1',
-        'https://api.smileidentity.com/v1'
-    ];
     public Signature $sig_class;
     private Client $client;
     private string $partner_id;
@@ -47,7 +43,7 @@ class IdApi
         }
         $this->client = new Client(['base_uri' => $this->sid_server]);
     }
-    
+
     /**
      * @param Client $client
      */
@@ -65,7 +61,7 @@ class IdApi
      * @throws GuzzleException
      * @throws Exception
      */
-    public function submit_job($partner_params, $id_info, $options): ResponseInterface
+    public function submit_job($partner_params, $id_info, $options): array
     {
         $user_async = array_value_by_key("user_async", $options);
         $signature = array_value_by_key("signature", $options);
@@ -84,12 +80,12 @@ class IdApi
         );
         $data = array_merge($data, $id_info, $sec_params);
         $json_data = json_encode($data, JSON_PRETTY_PRINT);
-        $client = is_null($this->client) ? new Client(['base_uri' => $this->sid_server, 'timeout' => 5.0]) : $this->client;
         $url = $user_async ? 'async_id_verification' : 'id_verification';
-        $resp = $client->post($url, [
+        $resp = $this->client->post($url, [
             'content-type' => 'application/json',
             'body' => $json_data
         ]);
-        return json_decode($resp->getBody()->getContents(), true);
+        $contents = $resp->getBody()->getContents();
+        return json_decode($contents, true);
     }
 }
