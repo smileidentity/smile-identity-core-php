@@ -65,7 +65,7 @@ final class SmileIdentityCoreTest extends TestCase
     public function testGetVersion(): void
     {
         $version = $this->sic->get_version();
-        $this->assertEquals('1.1.0', $version);
+        $this->assertEquals('3.1.0', $version);
     }
 
     /**

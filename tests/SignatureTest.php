@@ -37,7 +37,7 @@ final class SignatureTest extends TestCase
 
     public function testGenerateSignature()
     {
-        $timestamp = Clock::now()->format(DateTimeInterface::ISO8601);
+        $timestamp = Clock::now()->format(DateTimeInterface::ATOM);
         $signature = $this->sig->generate_signature();
         $this->assertSame(2, count($signature));
         $this->assertSame($timestamp, $signature['timestamp']);
@@ -50,7 +50,7 @@ final class SignatureTest extends TestCase
         $confirm_signature = $this->sig->confirm_signature($timestamp, $signature);
         $this->assertTrue($confirm_signature);
 
-        $timestamp = Clock::now()->format(DateTimeInterface::ISO8601);
+        $timestamp = Clock::now()->format(DateTimeInterface::ATOM);
         $signature = $this->sig->generate_signature($timestamp)['signature'];
         $confirm_signature = $this->sig->confirm_signature($timestamp, $signature);
         $this->assertTrue($confirm_signature);
