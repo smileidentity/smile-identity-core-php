@@ -7,6 +7,8 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Psr\Http\Message\ResponseInterface;
 
+include 'utils.php';
+
 require 'vendor/autoload.php';
 
 class IdApi
