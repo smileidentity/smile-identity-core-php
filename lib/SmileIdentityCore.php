@@ -215,23 +215,25 @@ class SmileIdentityCore
 
     /***
      *  Will query the backend for web session token with a specific timestamp
-     * @param timestamp the timestamp to generate the token from
+     * @param timestamp the iso 8601 date/time format to generate the token from
      * @param user_id
      * @param job_id
      * @param product_type - Literal value of any of the 6 product type options
      * @return array
      * @throws GuzzleException
      */
-    public function get_web_token($timestamp, $user_id, $job_id, $product_type): array
+    public function get_web_token($user_id, $job_id, $product_type, $timestamp = null, $callback_url = null): array
     {
+        $generate_signature = $this->sig_class->generate_signature($timestamp);
+
         $data = array(
-            'timestamp' => date(DateTimeInterface::ISO8601, $timestamp),
-            'callback_url' => $this->default_callback,
+            'callback_url' => $callback_url != null ? $callback_url : $this->default_callback,
             'partner_id' => $this->partner_id,
             'user_id' => $user_id,
             'job_id' => $job_id,
             'product' => $product_type,
-            'signature' => $this->sig_class->generate_signature($timestamp),
+            'signature' => $generate_signature["signature"],
+            'timestamp' => $generate_signature["timestamp"]
         );
 
         $json_data = json_encode($data, JSON_PRETTY_PRINT);
