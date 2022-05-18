@@ -3,7 +3,7 @@ spl_autoload_register(function ($class) {
     require_once($class . '.php');
 });
 
-include 'utils.php';
+require_once 'utils.php';
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
