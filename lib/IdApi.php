@@ -74,8 +74,8 @@ class IdApi
             'callback_url' => $this->default_callback,
             'partner_params' => $partner_params,
             'partner_id' => $this->partner_id,
-            'source_sdk' => 'PHP',
-            'source_sdk_version' => '2.0.0'
+            'source_sdk' => Config::SDK_CLIENT,
+            'source_sdk_version' => Config::VERSION
         );
         $data = array_merge($data, $id_info, $sec_params);
         $json_data = json_encode($data, JSON_PRETTY_PRINT);

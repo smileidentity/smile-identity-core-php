@@ -6,11 +6,10 @@ spl_autoload_register(function ($class) {
 include 'utils.php';
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Psr7;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Psr7;
 
-const VERSION = '2.0.0';
 const DEFAULT_JOB_STATUS_SLEEP = 2;
 const default_options = array(
     'optional_callback' => '',
@@ -141,8 +140,8 @@ class SmileIdentityCore
             'partner_id' => $this->partner_id,
             'image_links' => $options['return_image_links'],
             'history' => $options['return_history'],
-            'source_sdk' => 'PHP',
-            'source_sdk_version' => '2.0.0'
+            'source_sdk' => Config::SDK_CLIENT,
+            'source_sdk_version' => Config::VERSION
         );
         $data = array_merge($data, $sec_params);
 
@@ -222,8 +221,8 @@ class SmileIdentityCore
             'job_id' => $job_id,
             'product' => $product_type,
             'signature' => $this->sig_class->generate_signature($timestamp),
-            'source_sdk' => 'PHP',
-            'source_sdk_version' => '2.0.0'
+            'source_sdk' => Config::SDK_CLIENT,
+            'source_sdk_version' => Config::VERSION
         );
         
         $json_data = json_encode($data, JSON_PRETTY_PRINT);
@@ -290,8 +289,8 @@ class SmileIdentityCore
             'partner_params' => $partner_params,
             'smile_client_id' => $this->partner_id,
             'use_enrolled_image' => $use_enrolled_image,
-            'source_sdk' => 'PHP',
-            'source_sdk_version' => '2.0.0'
+            'source_sdk' => Config::SDK_CLIENT,
+            'source_sdk_version' => Config::VERSION
         );
 
         $data = array_merge($sec_params, $data);

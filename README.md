@@ -42,5 +42,3 @@ For usage questions, the best resource is [our official documentation](docs.smil
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/smileidentity/smile-identity-core-php
-
-Please format the code with [black](https://github.com/psf/black) prior to submitting pull requests, by running `black .` from the project's root.
