@@ -214,7 +214,7 @@ class SmileIdentityCore
     public function get_web_token($timestamp, $user_id, $job_id, $product_type): array
     {
         $data = array(
-            'timestamp' => date(DateTimeInterface::ISO8601, $timestamp),
+            'timestamp' => date(DateTimeInterface::ATOM, $timestamp),
             'callback_url' => $this->default_callback,
             'partner_id' => $this->partner_id,
             'user_id' => $user_id,
