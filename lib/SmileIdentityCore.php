@@ -3,14 +3,13 @@ spl_autoload_register(function ($class) {
     require_once($class . '.php');
 });
 
-include 'utils.php';
+require_once 'utils.php';
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Psr7;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Psr7;
 
-const VERSION = '1.1.0';
 const DEFAULT_JOB_STATUS_SLEEP = 2;
 const default_options = array(
     'optional_callback' => '',
@@ -38,12 +37,12 @@ class SmileIdentityCore
      * @param $sid_server
      * @throws Exception
      */
-    public function __construct($partner_id, $default_callback, $api_key, $sid_server)
+    public function __construct(string $partner_id, string $default_callback, string $api_key, string $sid_server)
     {
         $this->partner_id = $partner_id;
         $this->api_key = $api_key;
         $this->default_callback = $default_callback;
-        $this->sig_class = new Signature($api_key, $partner_id);
+        $this->sig_class = new Signature($partner_id, $api_key);
         if (strlen($sid_server) == 1) {
             if (intval($sid_server) < 2) {
                 $this->sid_server = Config::SID_SERVERS[intval($sid_server)];
@@ -62,18 +61,19 @@ class SmileIdentityCore
     }
 
     /**
-     * @param bool $use_signature
+     * Generates signature based current timestamp
      * @return array
      */
-    public function generate_sec_key(bool $use_signature): array
+    public function generate_signature(): array
     {
-        if ($use_signature){
-            return $this->sig_class->generate_signature();
-        }
-        return $this->sig_class->generate_sec_key();
+        return $this->sig_class->generate_signature();
     }
 
     /**
+     * @param array $partner_params a key-value pair object containing partner's specified parameters
+     * @param array $image_details a key-value pair object containing details for each image to be uploaded along with the job
+     * @param array $id_info a key-value pair object containing user's specified ID information
+     * @param array $options a key-value pair object containing additional, optional parameters
      * @throws GuzzleException
      * @throws Exception
      */
@@ -86,7 +86,6 @@ class SmileIdentityCore
         validatePartnerParams($partner_params);
         validateIdParams($id_info, $job_type);
 
-
         if ($job_type == 5) {
             $id_api = new IdApi($this->partner_id, $this->default_callback, $this->api_key, $this->sid_server);
             return $id_api->submit_job($partner_params, $id_info, $options);
@@ -94,11 +93,7 @@ class SmileIdentityCore
         validateImageParams($image_details, $job_type, key_exists('use_enrolled_image', $options) && $options['use_enrolled_image']);
         validateOptions($options);
 
-        if ($options['signature']) {
-            $sec_params = $this->sig_class->generate_signature();
-        } else {
-            $sec_params = $this->sig_class->generate_sec_key();
-        }
+        $sec_params = $this->sig_class->generate_signature();
 
         $response_body = $this->call_prep_upload($partner_params, $options, $sec_params);
         $code = array_value_by_key('code', $response_body);
@@ -128,19 +123,16 @@ class SmileIdentityCore
     }
 
     /**
-     * @param $partner_params
-     * @param $options
+     * Gets the status of a specific job
+     * @param array $partner_params a key-value pair object containing partner's specified parameters
+     * @param array $options a key-value pair object containing additional, optional parameters
      * @return array
      * @throws GuzzleException
      * @throws Exception
      */
     public function query_job_status($partner_params, $options): array
     {
-        if ($options['signature']) {
-            $sec_params = $this->sig_class->generate_signature();
-        } else {
-            $sec_params = $this->sig_class->generate_sec_key();
-        }
+        $sec_params = $this->sig_class->generate_signature();
 
         $data = array(
             'user_id' => $partner_params['user_id'],
@@ -148,6 +140,8 @@ class SmileIdentityCore
             'partner_id' => $this->partner_id,
             'image_links' => $options['return_image_links'],
             'history' => $options['return_history'],
+            'source_sdk' => Config::SDK_CLIENT,
+            'source_sdk_version' => Config::VERSION
         );
         $data = array_merge($data, $sec_params);
 
@@ -156,12 +150,7 @@ class SmileIdentityCore
         $client = $this->getClient();
         $resp = $client->post('job_status', ['content-type' => 'application/json', 'body' => $json_data]);
         $result = json_decode($resp->getBody()->getContents(), true);
-
-        if ($options['signature']) {
-            $valid = $this->sig_class->confirm_signature($result['timestamp'], $result['signature']);
-        } else {
-            $valid = $this->sig_class->confirm_sec_key($result['signature']);
-        }
+        $valid = $this->sig_class->confirm_signature($result['timestamp'], $result['signature']);
 
         if (!$valid) {
             throw new Exception("Unable to confirm validity of the job_status response");
@@ -170,28 +159,29 @@ class SmileIdentityCore
         return $result;
     }
     
-    
     /**
+     * Queries the list of Smile ID services
      * @return array
      * @throws GuzzleException
      * @throws Exception
      */
-    public function query_smile_id_services(): array {
+    public function query_smile_id_services(): array
+    {
         try {
             $resp = $this->client->get('services',
                 [
                     'content-type' => 'application/json'
                 ]
             );
-            
+
             $status_code = $resp->getStatusCode();
             $resp_result = $resp->getBody()->getContents();
-            
+
             if ($status_code !== 200) {
                 $msg = "Failed to get entity from {$this->sid_server}/services, response={statusCode}:{$resp->getReasonPhrase()} - {$resp_result}";
                 throw new Exception($msg);
             }
-            
+
             return json_decode($resp_result, true);
         } catch (RequestException $e) {
             $resp = $e->getResponse();
@@ -202,8 +192,9 @@ class SmileIdentityCore
     }
 
     /**
-     * @param $partner_params
-     * @param $options
+     * Gets the status of a specific job
+     * @param array $partner_params a key-value pair object containing partner's specified parameters
+     * @param array $options a key-value pair object containing additional, optional parameters
      * @return mixed
      * @throws GuzzleException
      */
@@ -211,9 +202,9 @@ class SmileIdentityCore
     {
         return $this->query_job_status($partner_params, $options);
     }
-    
+
     /***
-     *  Will query the backend for web session token with a specific timestamp
+     * Queries the backend for web session token with a specific timestamp
      * @param timestamp the timestamp to generate the token from
      * @param user_id
      * @param job_id
@@ -221,27 +212,29 @@ class SmileIdentityCore
      * @return array
      * @throws GuzzleException
      */
-    public function get_web_token($timestamp, $user_id, $job_id, $product_type): array
+    public function get_web_token($user_id, $job_id, $product_type, $timestamp = null, $callback_url = null): array
     {
         $data = array(
-            'timestamp' => date(DateTimeInterface::ISO8601, $timestamp),
-            'callback_url' => $this->default_callback,
+            'timestamp' => date(DateTimeInterface::ATOM, $timestamp),
+            'callback_url' => $callback_url != null ? $callback_url : $this->default_callback,
             'partner_id' => $this->partner_id,
             'user_id' => $user_id,
             'job_id' => $job_id,
             'product' => $product_type,
             'signature' => $this->sig_class->generate_signature($timestamp),
+            'source_sdk' => Config::SDK_CLIENT,
+            'source_sdk_version' => Config::VERSION
         );
-        
+
         $json_data = json_encode($data, JSON_PRETTY_PRINT);
-        
+
         try {
             $resp = $this->client->post('token',
                 [
                     'content-type' => 'application/json',
                     'body' => $json_data
                 ]
-                );
+            );
             return json_decode($resp->getBody()->getContents(), true);
         } catch (RequestException $e) {
             $resp = $e->getResponse();
@@ -285,10 +278,6 @@ class SmileIdentityCore
     {
         $callback = $options['optional_callback'];
         $job_type = $partner_params['job_type'];
-        $use_enrolled_image = null;
-        if ($job_type == 6 && key_exists('use_enrolled_image', $options)) {
-            $use_enrolled_image = $options['use_enrolled_image'];
-        }
 
         $data = array(
             'callback_url' => $callback,
@@ -296,12 +285,17 @@ class SmileIdentityCore
             'model_parameters' => '',
             'partner_params' => $partner_params,
             'smile_client_id' => $this->partner_id,
-            'use_enrolled_image' => $use_enrolled_image
+            'source_sdk' => Config::SDK_CLIENT,
+            'source_sdk_version' => Config::VERSION
         );
 
         $data = array_merge($sec_params, $data);
+        if ($job_type == 6 && key_exists('use_enrolled_image', $options)) {
+            $data = array_merge($data, array('use_enrolled_image' => $options['use_enrolled_image']));
+        }
 
         $json_data = json_encode($data, JSON_PRETTY_PRINT);
+
         try {
             $resp = $this->client->post('upload',
                 [
@@ -389,7 +383,6 @@ class SmileIdentityCore
      */
     private function generate_zip_file($response_body, $id_info, $images_info, $partner_params, $sec_param, $options): string
     {
-
         $info_json = $this->configure_info_json($response_body, $id_info, $images_info, $partner_params, $sec_param, $options);
         $file = tempnam(sys_get_temp_dir(), "selfie");
         $zip = new ZipArchive();

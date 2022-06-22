@@ -19,8 +19,8 @@ final class SmileIdentityCoreTest extends TestCase
     protected array $options;
     protected array $partnerParams;
 
-    protected int $sid_server = 0;
-    protected int $partner_id = 212;
+    protected string $sid_server = "0";
+    protected string $partner_id = "212";
 
     /**
      * @throws Exception
@@ -54,7 +54,6 @@ final class SmileIdentityCoreTest extends TestCase
             "job_id" => "job-id",
             "job_type" => 1,
         ];
-
     }
 
     public function testInitialize(): void
@@ -65,7 +64,7 @@ final class SmileIdentityCoreTest extends TestCase
     public function testGetVersion(): void
     {
         $version = $this->sic->get_version();
-        $this->assertEquals('1.1.0', $version);
+        $this->assertEquals(Config::VERSION, $version);
     }
 
     /**
@@ -94,7 +93,6 @@ final class SmileIdentityCoreTest extends TestCase
             "smile_job_id" => "0000058873",
             "camera_config" => null,
             "code" => 2202
-
         ];
 
         $mock = new MockHandler([
@@ -109,7 +107,6 @@ final class SmileIdentityCoreTest extends TestCase
         $this->options["return_job_status"] = false;
         $result = $this->sic->submit_job($this->partnerParams, $this->imageDetails, $this->idParams, $this->options);
         $this->assertEquals(["smile_job_id" => "0000058873", "success" => true], $result);
-
     }
 
     /**
@@ -123,9 +120,8 @@ final class SmileIdentityCoreTest extends TestCase
             "smile_job_id" => "0000058873",
             "camera_config" => null,
             "code" => 2202
-
         ];
-        $secParam = $this->sic->generate_sec_key($this->options["signature"] );
+        $secParam = $this->sic->generate_signature();
         $timestamp = $secParam['timestamp'];
         $signature = $secParam['signature'];
         $getStatusResult = '{"timestamp": "' . $timestamp . '", "signature": "' . $signature . '", "job_complete": true, "job_success": false, "code": "2302", "result": {}, "history": [], "image_links": {"selfie_image": "https://selfie-image.com"}}';
@@ -145,7 +141,6 @@ final class SmileIdentityCoreTest extends TestCase
 
         $expectedResult = array_merge(json_decode($getStatusResult, true), ["success" => true]);
         $this->assertEquals($expectedResult, $result);
-
     }
 
     public function shouldCallIDApiWhenSubmitJobIsCalledWithJobType5(): void
@@ -183,7 +178,6 @@ final class SmileIdentityCoreTest extends TestCase
             "smile_job_id" => "0000058873",
             "camera_config" => null,
             "code" => 2202
-
         ];
         $partnerParams = [
             "user_id" => "user-id",
@@ -196,7 +190,7 @@ final class SmileIdentityCoreTest extends TestCase
             "id_number" => "A00000000",
         ];
         $imageDetails = [["image_type_id" => 0, "image" => "base6image"]];
-        $secParam = $this->sic->generate_sec_key($this->options["signature"] );
+        $secParam = $this->sic->generate_signature();
         $timestamp = $secParam['timestamp'];
         $signature = $secParam['signature'];
         $getStatusResult = '{"timestamp": "' . $timestamp . '", "signature": "' . $signature . '", "job_complete": true, "job_success": false, "code": "2302", "result": {}, "history": [], "image_links": {"selfie_image": "https://selfie-image.com"}}';
@@ -227,7 +221,6 @@ final class SmileIdentityCoreTest extends TestCase
             "smile_job_id" => "0000058873",
             "camera_config" => null,
             "code" => 2202
-
         ];
         $partnerParams = [
             "user_id" => "user-id",
@@ -239,7 +232,7 @@ final class SmileIdentityCoreTest extends TestCase
             "id_number" => "A00000000",
         ];
         $imageDetails = [["image_type_id" => 0, "image" => "base6image"]];
-        $secParam = $this->sic->generate_sec_key($this->options["signature"] );
+        $secParam = $this->sic->generate_signature();
         $timestamp = $secParam['timestamp'];
         $signature = $secParam['signature'];
         $getStatusResult = '{"timestamp": "' . $timestamp . '", "signature": "' . $signature . '", "job_complete": true, "job_success": false, "code": "2302", "result": {}, "history": [], "image_links": {"selfie_image": "https://selfie-image.com"}}';
@@ -270,7 +263,6 @@ final class SmileIdentityCoreTest extends TestCase
             "smile_job_id" => "0000058873",
             "camera_config" => null,
             "code" => 2202
-
         ];
         $partnerParams = [
             "user_id" => "user-id",
@@ -282,7 +274,7 @@ final class SmileIdentityCoreTest extends TestCase
             "id_number" => "A00000000",
         ];
         $imageDetails = [["image_type_id" => 0, "image" => "base6image"]];
-        $secParam = $this->sic->generate_sec_key($this->options["signature"] );
+        $secParam = $this->sic->generate_signature();
         $timestamp = $secParam['timestamp'];
         $signature = $secParam['signature'];
         $getStatusResult = '{"timestamp": "' . $timestamp . '", "signature": "' . $signature . '", "job_complete": true, "job_success": false, "code": "2302", "result": {}, "history": [], "image_links": {"selfie_image": "https://selfie-image.com"}}';
@@ -313,7 +305,6 @@ final class SmileIdentityCoreTest extends TestCase
             "smile_job_id" => "0000058873",
             "camera_config" => null,
             "code" => 2202
-
         ];
         $partnerParams = [
             "user_id" => "user-id",
@@ -325,9 +316,9 @@ final class SmileIdentityCoreTest extends TestCase
             "id_number" => "A00000000",
         ];
         $imageDetails = [["image_type_id" => 1, "image" => "base6image"]];
-        $secParam = $this->sic->generate_sec_key($this->options["signature"] );
-        $timestamp = $secParam['timestamp'];
-        $signature = $secParam['signature'];
+        $sigParam = $this->sic->generate_signature();
+        $timestamp = $sigParam['timestamp'];
+        $signature = $sigParam['signature'];
         $getStatusResult = '{"timestamp": "' . $timestamp . '", "signature": "' . $signature . '", "job_complete": true, "job_success": false, "code": "2302", "result": {}, "history": [], "image_links": {"selfie_image": "https://selfie-image.com"}}';
 
         $mock = new MockHandler([
@@ -343,11 +334,11 @@ final class SmileIdentityCoreTest extends TestCase
         $this->sic->submit_job($this->partnerParams, $imageDetails, $this->idParams, $this->options);
     }
 
-    public function testGenerateKey(): void
+    public function testGenerateSignature(): void
     {
-        $timestamp = Clock::now()->getTimestamp();
-        $sec_key = $this->sic->generate_sec_key(false);
-        $this->assertEquals($timestamp, $sec_key["timestamp"]);
+        $timestamp = Clock::now()->format(DateTimeInterface::ATOM);
+        $signature = $this->sic->generate_signature($timestamp);
+        $this->assertEquals($timestamp, $signature["timestamp"]);
     }
     
     public function testGetWebToken(): void
@@ -364,12 +355,12 @@ final class SmileIdentityCoreTest extends TestCase
         $handler = HandlerStack::create($mock);
         $client = new Client(['handler' => $handler]);
         $this->sic->setClient($client);
-        
+
         $timestamp = Clock::now()->getTimestamp();
         $user_id = "<USER_ID>";
         $job_id = "<JOB_ID>";
         $product = "<PRODUCT_TYPE>";
-        $result = $this->sic->get_web_token($timestamp, $user_id, $job_id, $product);
+        $result = $this->sic->get_web_token($user_id, $job_id, $product, $timestamp);
         $this->assertEquals($result, $expectedResult);
     }
     

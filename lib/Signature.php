@@ -13,10 +13,10 @@ class Signature
 
     /**
      * Signature constructor.
-     * @param $api_key
      * @param $partner_id
+     * @param $api_key
      */
-    function __construct($api_key, $partner_id)
+    function __construct($partner_id, $api_key)
     {
         $this->api_key = $api_key;
         $this->partner_id = $partner_id;
@@ -24,8 +24,10 @@ class Signature
     }
 
     /**
+     * Generates a sec_key for the provided timestamp or the current timestamp by default
      * @param $timestamp
      * @return array
+     * @deprecated deprecated since version 3.0.0
      */
     function generate_sec_key($timestamp = null): array
     {
@@ -39,7 +41,13 @@ class Signature
         return array("sec_key" => $sec_key, "timestamp" => $timestamp);
     }
 
-    function confirm_sec_key($sec_key): bool
+    /**
+     * Confirms the sec-key against a newly generated sec-key based on the same timestamp
+     * @param string $sec_key
+     * @return bool
+     * @deprecated deprecated since version 3.0.0
+     */
+     function confirm_sec_key($sec_key): bool
     {
         $sec_key_exploded = explode("|", $sec_key);
         $encrypted = base64_decode($sec_key_exploded[0]);
@@ -50,18 +58,20 @@ class Signature
     }
 
     /**
+     * Generates a signature for the provided timestamp or the current timestamp by default
      * @param $timestamp
      * @return array
      */
     function generate_signature($timestamp = null): array
     {
-        $timestamp = $timestamp != null ? $timestamp : Clock::now()->format(DateTimeInterface::ISO8601);
+        $timestamp = $timestamp != null ? $timestamp : Clock::now()->format(DateTimeInterface::ATOM);
         $message = $timestamp . $this->partner_id . "sid_request";
-        $sec_key = base64_encode(hash_hmac('sha256', $message, $this->api_key, true));
-        return array("signature" => $sec_key, "timestamp" => $timestamp);
+        $signature = base64_encode(hash_hmac('sha256', $message, $this->api_key, true));
+        return array("signature" => $signature, "timestamp" => $timestamp);
     }
 
     /**
+     * Confirms the signature against a newly generated signature based on the same timestamp
      * @param $timestamp
      * @param string $signature
      * @return bool
