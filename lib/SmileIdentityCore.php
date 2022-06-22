@@ -204,27 +204,16 @@ class SmileIdentityCore
     }
 
     /***
-<<<<<<< HEAD
      * Queries the backend for web session token with a specific timestamp
      * @param timestamp the timestamp to generate the token from
      * @param user_id
      * @param job_id
      * @param product_type - Literal value of any of the 6 product type options
-=======
-     *  Will query the backend for web session token with a specific timestamp
-     * @param $user_id - user's id
-     * @param $job_id - job id
-     * @param $product_type - Literal value of the 6 product type options
-     * @param $timestamp - the iso 8601 date/time format to generate the token from
-     * @param $callback_url - the iso 8601 date/time format to generate the token from
->>>>>>> master
      * @return array
      * @throws GuzzleException
      */
     public function get_web_token($user_id, $job_id, $product_type, $timestamp = null, $callback_url = null): array
     {
-        $generate_signature = $this->sig_class->generate_signature($timestamp);
-
         $data = array(
             'timestamp' => date(DateTimeInterface::ATOM, $timestamp),
             'callback_url' => $callback_url != null ? $callback_url : $this->default_callback,
@@ -296,7 +285,6 @@ class SmileIdentityCore
             'model_parameters' => '',
             'partner_params' => $partner_params,
             'smile_client_id' => $this->partner_id,
-            'use_enrolled_image' => $use_enrolled_image,
             'source_sdk' => Config::SDK_CLIENT,
             'source_sdk_version' => Config::VERSION
         );
