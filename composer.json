@@ -14,7 +14,7 @@
 		"ext-curl" : "*",
 		"ext-json" : "*",
 		"ext-openssl" : "*",
-		"ext-zip": "*",
+		"ext-zip" : "*",
 		"guzzlehttp/guzzle" : "^7.0",
 		"letsdrink/ouzo-goodies" : "~1.0"
 	},
