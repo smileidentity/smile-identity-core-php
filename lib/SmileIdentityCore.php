@@ -3,7 +3,7 @@ spl_autoload_register(function ($class) {
     require_once($class . '.php');
 });
 
-include 'utils.php';
+require_once 'utils.php';
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
@@ -38,7 +38,7 @@ class SmileIdentityCore
      * @param $sid_server
      * @throws Exception
      */
-    public function __construct($partner_id, $default_callback, $api_key, $sid_server)
+    public function __construct(string $partner_id, string $default_callback, string $api_key, string $sid_server)
     {
         $this->partner_id = $partner_id;
         $this->api_key = $api_key;
@@ -67,7 +67,7 @@ class SmileIdentityCore
      */
     public function generate_sec_key(bool $use_signature): array
     {
-        if ($use_signature){
+        if ($use_signature) {
             return $this->sig_class->generate_signature();
         }
         return $this->sig_class->generate_sec_key();
@@ -169,29 +169,30 @@ class SmileIdentityCore
 
         return $result;
     }
-    
-    
+
+
     /**
      * @return array
      * @throws GuzzleException
      * @throws Exception
      */
-    public function query_smile_id_services(): array {
+    public function query_smile_id_services(): array
+    {
         try {
             $resp = $this->client->get('services',
                 [
                     'content-type' => 'application/json'
                 ]
             );
-            
+
             $status_code = $resp->getStatusCode();
             $resp_result = $resp->getBody()->getContents();
-            
+
             if ($status_code !== 200) {
                 $msg = "Failed to get entity from {$this->sid_server}/services, response={statusCode}:{$resp->getReasonPhrase()} - {$resp_result}";
                 throw new Exception($msg);
             }
-            
+
             return json_decode($resp_result, true);
         } catch (RequestException $e) {
             $resp = $e->getResponse();
@@ -211,37 +212,40 @@ class SmileIdentityCore
     {
         return $this->query_job_status($partner_params, $options);
     }
-    
+
     /***
      *  Will query the backend for web session token with a specific timestamp
-     * @param timestamp the timestamp to generate the token from
-     * @param user_id
-     * @param job_id
-     * @param product_type - Literal value of any of the 6 product type options
+     * @param $user_id - user's id
+     * @param $job_id - job id
+     * @param $product_type - Literal value of the 6 product type options
+     * @param $timestamp - the iso 8601 date/time format to generate the token from
+     * @param $callback_url - the iso 8601 date/time format to generate the token from
      * @return array
      * @throws GuzzleException
      */
-    public function get_web_token($timestamp, $user_id, $job_id, $product_type): array
+    public function get_web_token($user_id, $job_id, $product_type, $timestamp = null, $callback_url = null): array
     {
+        $generate_signature = $this->sig_class->generate_signature($timestamp);
+
         $data = array(
-            'timestamp' => date(DateTimeInterface::ISO8601, $timestamp),
-            'callback_url' => $this->default_callback,
+            'callback_url' => $callback_url != null ? $callback_url : $this->default_callback,
             'partner_id' => $this->partner_id,
             'user_id' => $user_id,
             'job_id' => $job_id,
             'product' => $product_type,
-            'signature' => $this->sig_class->generate_signature($timestamp),
+            'signature' => $generate_signature["signature"],
+            'timestamp' => $generate_signature["timestamp"]
         );
-        
+
         $json_data = json_encode($data, JSON_PRETTY_PRINT);
-        
+
         try {
             $resp = $this->client->post('token',
                 [
                     'content-type' => 'application/json',
                     'body' => $json_data
                 ]
-                );
+            );
             return json_decode($resp->getBody()->getContents(), true);
         } catch (RequestException $e) {
             $resp = $e->getResponse();
@@ -285,10 +289,6 @@ class SmileIdentityCore
     {
         $callback = $options['optional_callback'];
         $job_type = $partner_params['job_type'];
-        $use_enrolled_image = null;
-        if ($job_type == 6 && key_exists('use_enrolled_image', $options)) {
-            $use_enrolled_image = $options['use_enrolled_image'];
-        }
 
         $data = array(
             'callback_url' => $callback,
@@ -296,12 +296,15 @@ class SmileIdentityCore
             'model_parameters' => '',
             'partner_params' => $partner_params,
             'smile_client_id' => $this->partner_id,
-            'use_enrolled_image' => $use_enrolled_image
         );
 
         $data = array_merge($sec_params, $data);
+        if ($job_type == 6 && key_exists('use_enrolled_image', $options)) {
+            $data = array_merge($data, array('use_enrolled_image' => $options['use_enrolled_image']));
+        }
 
         $json_data = json_encode($data, JSON_PRETTY_PRINT);
+
         try {
             $resp = $this->client->post('upload',
                 [
