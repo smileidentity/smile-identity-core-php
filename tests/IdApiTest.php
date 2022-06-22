@@ -69,15 +69,14 @@ final class IdApiTest extends TestCase
         $json_data = json_encode($data, JSON_PRETTY_PRINT);
 
         $mock = new MockHandler([
-            new Response(200, ['body' => $json_data], '{"success":true}'),
+            new Response(200, [], '{"success":true}'),
         ]);
 
         $handler = HandlerStack::create($mock);
         $client = new Client(['handler' => $handler]);
         $this->idApi->setClient($client);
         $job = $this->idApi->submit_job($this->partner_params, $this->id_info, ['use_async' => true]);
-        $this->assertEquals(200, $job->getStatusCode());
-        $this->assertEquals('{"success":true}', $job->getBody()->getContents());
+        $this->assertEquals(array("success" => true), $job);
     }
 
     /**
@@ -89,14 +88,13 @@ final class IdApiTest extends TestCase
         $json_data = json_encode($data, JSON_PRETTY_PRINT);
 
         $mock = new MockHandler([
-            new Response(200, ['body' => $json_data], '{"success":true}'),
+            new Response(200, [], '{"success":true}'),
         ]);
 
         $handler = HandlerStack::create($mock);
         $client = new Client(['handler' => $handler]);
         $this->idApi->setClient($client);
         $job = $this->idApi->submit_job($this->partner_params, $this->id_info, ['use_async' => false]);
-        $this->assertEquals(200, $job->getStatusCode());
-        $this->assertEquals('{"success":true}', $job->getBody()->getContents());
+        $this->assertEquals(array("success" => true), $job);
     }
 }

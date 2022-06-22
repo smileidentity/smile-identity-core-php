@@ -3,7 +3,7 @@
 class Config
 {
     const SDK_CLIENT = 'PHP';
-    const VERSION = '2.0.0';
+    const VERSION = '3.1.0';
     const DEFAULT_JOB_STATUS_TIMEOUT = 20;
     const DEFAULT_JOB_STATUS_SLEEP = 2;
     const SID_SERVERS = [

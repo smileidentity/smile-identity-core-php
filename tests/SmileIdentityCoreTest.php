@@ -19,8 +19,8 @@ final class SmileIdentityCoreTest extends TestCase
     protected array $options;
     protected array $partnerParams;
 
-    protected int $sid_server = 0;
-    protected int $partner_id = 212;
+    protected string $sid_server = "0";
+    protected string $partner_id = "212";
 
     /**
      * @throws Exception
@@ -355,12 +355,12 @@ final class SmileIdentityCoreTest extends TestCase
         $handler = HandlerStack::create($mock);
         $client = new Client(['handler' => $handler]);
         $this->sic->setClient($client);
-        
+
         $timestamp = Clock::now()->getTimestamp();
         $user_id = "<USER_ID>";
         $job_id = "<JOB_ID>";
         $product = "<PRODUCT_TYPE>";
-        $result = $this->sic->get_web_token($timestamp, $user_id, $job_id, $product);
+        $result = $this->sic->get_web_token($user_id, $job_id, $product, $timestamp);
         $this->assertEquals($result, $expectedResult);
     }
     
