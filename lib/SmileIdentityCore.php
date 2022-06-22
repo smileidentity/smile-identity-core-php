@@ -215,10 +215,11 @@ class SmileIdentityCore
 
     /***
      *  Will query the backend for web session token with a specific timestamp
-     * @param timestamp the iso 8601 date/time format to generate the token from
-     * @param user_id
-     * @param job_id
-     * @param product_type - Literal value of any of the 6 product type options
+     * @param $user_id - user's id
+     * @param $job_id - job id
+     * @param $product_type - Literal value of the 6 product type options
+     * @param $timestamp - the iso 8601 date/time format to generate the token from
+     * @param $callback_url - the iso 8601 date/time format to generate the token from
      * @return array
      * @throws GuzzleException
      */
