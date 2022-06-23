@@ -17,7 +17,7 @@ $sid_core = new SmileIdentityCore(
     $default_callback,
     $api_key,
     $sid_server
-);
+    );
 
 // Create required tracking parameters
 // Every communication between your server and the Smile Identity servers contain these parameters.
@@ -33,10 +33,10 @@ $partner_params = array(
     // 4 for registering a user with just a selfie
     // 8 for updating an registered photo
     'job_type' => <1 | 2 | 4 | 8>,
-     // You can add as many key value pairs as you line but all MUST be strings.
+    // You can add as many key value pairs as you line but all MUST be strings.
     'optional_info' => 'PHP Test Data',
     'signature' => <true | false>
-    );
+);
 
 // Create options
 $options = array(
@@ -48,7 +48,7 @@ $options = array(
     'return_history' => <true | false>,
     // If you want signed links to the images used in processing the job to be returned
     'return_image_links' => <true | false>
-    );
+);
 
 // Create image list
 // image_type_id Integer
@@ -61,16 +61,16 @@ $id_card_filename = 'tmp/idcard.jpg'; // Path to idcard image file
 $selfie_image_detail = array(
     'image_type_id' => 0, // Selfie image jpg or png
     'image' => $selfie_filename
-    );
+);
 // ID card image can be omitted if selfie comparison to issuer image is desired
 $id_card_image_detail = array(
     'image_type_id' => 1, // ID card image jpg or png
     'image' => $id_card_filename
-    );
+);
 $image_details = array(
     $selfie_image_detail,
     $id_card_image_detail
-    );
+);
 
 // Create ID number info
 // Only required fields need to be filled in. The rest should be blank strings
@@ -84,7 +84,7 @@ $id_info = array(
     'id_number' => '<valid id number>', // Always required
     'dob' => '<DOB in ISO 8601 format>', // yyyy-mm-dd
     'entered' => '<true | false>' // MUST BE A STRING
-    );
+);
 
 // submit_job returns an array with at least a Boolean using the key "success" and the Smile Identity job number.
 // If options.return_job_status is true it will add to the array the returned job_status information.
@@ -100,7 +100,7 @@ $sid_idapi = new IdApi(
     $default_callback, // Used if $use_async is true otherwise should be ""
     $api_key,
     $sid_server
-);
+    );
 
 // If use_async is false $result contains the returned ID information
 // If true then the ID information will be sent to the callback specified - >> RECOMMENDED <<
@@ -116,9 +116,9 @@ $partner_params = array(
     'user_id' => '<put unique job ID here',
     // Job Type Integer
     'job_type' => 5,
-     // You can add as many key value pairs as you line but all MUST be strings.
+    // You can add as many key value pairs as you line but all MUST be strings.
     'optional_info' => 'PHP Test Data'
-    );
+);
 
 // Create ID number info
 // Only required fields need to be filled in. The rest should be blank strings
@@ -132,7 +132,7 @@ $id_info = array(
     'id_number' => '<valid id number>', // Always required
     'dob' => '<DOB in ISO 8601 format>', // yyyy-mm-dd
     'entered' => '<true | false>' // MUST BE A STRING
-    );
+);
 
 
 //

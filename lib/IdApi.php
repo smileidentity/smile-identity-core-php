@@ -21,17 +21,19 @@ class IdApi
 
     /**
      * IdApi constructor.
-     * @param $partner_id
-     * @param $default_callback
-     * @param $api_key ,
-     * @param $sid_server
+     * @param string $partner_id the provided partner ID string
+     * @param string $default_callback
+     * @param string $api_key the partner-provided API key
+     * @param string $sid_server an integer value corresponding to the chosen server
+     * 0 for test/sandbox
+     * 1 for production
      * @throws Exception
      */
     public function __construct($partner_id, $default_callback, $api_key, $sid_server)
     {
         $this->partner_id = $partner_id;
         $this->default_callback = $default_callback;
-        $this->sig_class = new Signature($api_key, $partner_id);
+        $this->sig_class = new Signature($partner_id, $api_key);
         if (strlen($sid_server) == 1) {
             if (intval($sid_server) < 2) {
                 $this->sid_server = Config::SID_SERVERS[intval($sid_server)];
@@ -53,10 +55,10 @@ class IdApi
     }
 
     /**
-     * @param $partner_params
-     * @param $id_info
-     * @param $use_async
-     * @param $options
+     * Submits a job with specified partner parameters and ID information
+     * @param array $partner_params a key-value pair object containing partner's specified parameters
+     * @param array $id_info a key-value pair object containing user's specified ID information
+     * @param array $options a key-value pair object containing additional, optional parameters
      * @return ResponseInterface
      * @throws GuzzleException
      * @throws Exception
@@ -64,19 +66,15 @@ class IdApi
     public function submit_job($partner_params, $id_info, $options): array
     {
         $user_async = array_value_by_key("user_async", $options);
-        $signature = array_value_by_key("signature", $options);
-
-        if ($signature) {
-            $sec_params = $this->sig_class->generate_signature();
-        } else {
-            $sec_params = $this->sig_class->generate_sec_key();
-        }
+        $sec_params = $this->sig_class->generate_signature();
 
         $data = array(
             'language' => 'php',
             'callback_url' => $this->default_callback,
             'partner_params' => $partner_params,
-            'partner_id' => $this->partner_id
+            'partner_id' => $this->partner_id,
+            'source_sdk' => Config::SDK_CLIENT,
+            'source_sdk_version' => Config::VERSION
         );
         $data = array_merge($data, $id_info, $sec_params);
         $json_data = json_encode($data, JSON_PRETTY_PRINT);
