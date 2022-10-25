@@ -25,7 +25,11 @@ View the package on [Packagist](https://packagist.org/packages/smile-identity/sm
 
 Alternatively, the package can be searched locally from a composer-based project by typing the command `composer search <PACKAGE_NAME>` in the command line where `PACKAGE_NAME` can the full name of the package (in this case `smile-identity/smile-identity-core`) or any part of the name distinct enough to return a match.
 
-In the project's directory, run `composer install smile-identity/smile-identity-core`
+In the project's directory, run:
+
+```shell 
+composer require smile-identity/smile-identity-core
+```
 
 ## License
 
