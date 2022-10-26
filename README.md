@@ -27,17 +27,9 @@ Alternatively, the package can be searched locally from a composer-based project
 
 In the project's directory, run:
 
-```shell 
+```shell
 composer require smile-identity/smile-identity-core
 ```
-
-## License
-
-MIT License
-
-## Documentation
-
-For extensive instructions on usage of the library and sample codes, please refer to the official Smile [Identity documentation](https://docs.smileidentity.com/server-to-server/php).
 
 ## Getting Help
 
@@ -46,3 +38,7 @@ For usage questions, the best resource is [our official documentation](docs.smil
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/smileidentity/smile-identity-core-php
+
+## License
+
+MIT License
