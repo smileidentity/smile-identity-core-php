@@ -1,7 +1,10 @@
-# Smile Identity PHP Server Side
+# Smile Identity PHP Server Side SDK
 
 Smile Identity provides the best solutions for real time Digital KYC, identity verification, user onboarding, and user authentication across Africa. Our server side libraries make it easy to integrate us on the server-side. Since the library is server-side, you will be required to pass the images (if required) to the library.
-If you haven’t already, sign up for a free Smile Identity account, which comes with Sandbox access.
+
+If you haven’t already, [sign up for a free Smile Identity account](https://www.smileidentity.com/schedule-a-demo/), which comes with Sandbox access.
+
+Please see [CHANGELOG.md](CHANGELOG.md) for release versions and changes.
 
 ## Dependencies
 
@@ -9,7 +12,7 @@ If you haven’t already, sign up for a free Smile Identity account, which comes
 
 ## Documentation
 
-For extensive instructions on usage of the library and sample codes, please refer to the [official Smile Identity documentation](https://docs.smileidentity.com/server-to-server/php)
+For extensive instructions on usage of the library and sample codes, please refer to the [official Smile Identity documentation](https://docs.smileidentity.com/server-to-server/php).
 
 ## Installation
 
