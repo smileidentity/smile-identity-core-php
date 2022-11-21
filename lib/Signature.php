@@ -24,40 +24,6 @@ class Signature
     }
 
     /**
-     * Generates a sec_key for the provided timestamp or the current timestamp by default
-     * @param $timestamp
-     * @return array
-     * @deprecated deprecated since version 3.0.0
-     */
-    function generate_sec_key($timestamp = null): array
-    {
-        $timestamp = $this->isTimestamp($timestamp) ? $timestamp : $this->timestamp;
-        $plaintext = intval($this->partner_id) . ":" . $timestamp;
-        $hash_signature = hash('sha256', $plaintext);
-        $sec_key = '';
-        openssl_public_encrypt($hash_signature, $sec_key, base64_decode($this->api_key), OPENSSL_PKCS1_PADDING);
-        $sec_key = base64_encode($sec_key);
-        $sec_key = $sec_key . "|" . $hash_signature;
-        return array("sec_key" => $sec_key, "timestamp" => $timestamp);
-    }
-
-    /**
-     * Confirms the sec-key against a newly generated sec-key based on the same timestamp
-     * @param string $sec_key
-     * @return bool
-     * @deprecated deprecated since version 3.0.0
-     */
-     function confirm_sec_key($sec_key): bool
-    {
-        $sec_key_exploded = explode("|", $sec_key);
-        $encrypted = base64_decode($sec_key_exploded[0]);
-        $hash_signature = $sec_key_exploded[1];
-        $decrypted = '';
-        openssl_public_decrypt($encrypted, $decrypted, base64_decode($this->api_key), OPENSSL_PKCS1_PADDING);
-        return $hash_signature == $decrypted;
-    }
-
-    /**
      * Generates a signature for the provided timestamp or the current timestamp by default
      * @param $timestamp
      * @return array

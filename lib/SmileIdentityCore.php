@@ -93,9 +93,9 @@ class SmileIdentityCore
         validateImageParams($image_details, $job_type, key_exists('use_enrolled_image', $options) && $options['use_enrolled_image']);
         validateOptions($options);
 
-        $sec_params = $this->sig_class->generate_signature();
+        $signature_params = $this->sig_class->generate_signature();
 
-        $response_body = $this->call_prep_upload($partner_params, $options, $sec_params);
+        $response_body = $this->call_prep_upload($partner_params, $options, $signature_params);
         $code = array_value_by_key('code', $response_body);
         if ($code != '2202') {
             $message = array_value_by_key('error', $response_body);
@@ -107,7 +107,7 @@ class SmileIdentityCore
 
         $upload_url = $response_body['upload_url'];
         $smile_job_id = $response_body['smile_job_id'];
-        $file_path = $this->generate_zip_file($response_body, $id_info, $image_details, $partner_params, $sec_params, $options);
+        $file_path = $this->generate_zip_file($response_body, $id_info, $image_details, $partner_params, $signature_params, $options);
         $response = $this->upload_file($upload_url, $file_path);
 
         if ($response["statusCode"] != 200) {
@@ -132,7 +132,7 @@ class SmileIdentityCore
      */
     public function query_job_status($partner_params, $options): array
     {
-        $sec_params = $this->sig_class->generate_signature();
+        $signature_params = $this->sig_class->generate_signature();
 
         $data = array(
             'user_id' => $partner_params['user_id'],
@@ -143,7 +143,7 @@ class SmileIdentityCore
             'source_sdk' => Config::SDK_CLIENT,
             'source_sdk_version' => Config::VERSION
         );
-        $data = array_merge($data, $sec_params);
+        $data = array_merge($data, $signature_params);
 
         $json_data = json_encode($data, JSON_PRETTY_PRINT);
 
@@ -270,11 +270,11 @@ class SmileIdentityCore
     /**
      * @param $partner_params
      * @param $options
-     * @param $sec_params
+     * @param $signature_params
      * @return array
      * @throws GuzzleException
      */
-    private function call_prep_upload($partner_params, $options, $sec_params): array
+    private function call_prep_upload($partner_params, $options, $signature_params): array
     {
         $callback = $options['optional_callback'];
         $job_type = $partner_params['job_type'];
@@ -289,7 +289,7 @@ class SmileIdentityCore
             'source_sdk_version' => Config::VERSION
         );
 
-        $data = array_merge($sec_params, $data);
+        $data = array_merge($signature_params, $data);
         if ($job_type == 6 && key_exists('use_enrolled_image', $options)) {
             $data = array_merge($data, array('use_enrolled_image' => $options['use_enrolled_image']));
         }
@@ -335,11 +335,11 @@ class SmileIdentityCore
      * @param $id_info
      * @param $images
      * @param $partner_params
-     * @param $sec_param
+     * @param $signature_params
      * @param $options
      * @return array
      */
-    private function configure_info_json($prep_upload_response_array, $id_info, $images, $partner_params, $sec_param, $options)
+    private function configure_info_json($prep_upload_response_array, $id_info, $images, $partner_params, $signature_params, $options)
     {
         $callback = $options['optional_callback'];
         $misc = array(
@@ -361,7 +361,7 @@ class SmileIdentityCore
                 "countryName" => ""
             )
         );
-        $misc = array_merge($misc, $sec_param);
+        $misc = array_merge($misc, $signature_params);
 
         return array(
             "package_information" => array(
@@ -381,9 +381,9 @@ class SmileIdentityCore
 
     /**
      */
-    private function generate_zip_file($response_body, $id_info, $images_info, $partner_params, $sec_param, $options): string
+    private function generate_zip_file($response_body, $id_info, $images_info, $partner_params, $signature_params, $options): string
     {
-        $info_json = $this->configure_info_json($response_body, $id_info, $images_info, $partner_params, $sec_param, $options);
+        $info_json = $this->configure_info_json($response_body, $id_info, $images_info, $partner_params, $signature_params, $options);
         $file = tempnam(sys_get_temp_dir(), "selfie");
         $zip = new ZipArchive();
 

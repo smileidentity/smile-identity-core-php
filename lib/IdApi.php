@@ -66,7 +66,7 @@ class IdApi
     public function submit_job($partner_params, $id_info, $options): array
     {
         $user_async = array_value_by_key("user_async", $options);
-        $sec_params = $this->sig_class->generate_signature();
+        $signature_params = $this->sig_class->generate_signature();
 
         $data = array(
             'language' => 'php',
@@ -76,7 +76,7 @@ class IdApi
             'source_sdk' => Config::SDK_CLIENT,
             'source_sdk_version' => Config::VERSION
         );
-        $data = array_merge($data, $id_info, $sec_params);
+        $data = array_merge($data, $id_info, $signature_params);
         $json_data = json_encode($data, JSON_PRETTY_PRINT);
         $url = $user_async ? 'async_id_verification' : 'id_verification';
         $resp = $this->client->post($url, [
