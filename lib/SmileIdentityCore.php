@@ -9,6 +9,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Psr7;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
+use Ouzo\Utilities\Clock;
 
 const DEFAULT_JOB_STATUS_SLEEP = 2;
 const default_options = array(
@@ -214,14 +215,17 @@ class SmileIdentityCore
      */
     public function get_web_token($user_id, $job_id, $product_type, $timestamp = null, $callback_url = null): array
     {
+        $timestamp = $timestamp != null ? $timestamp : Clock::now()->getTimestamp();;
+        $signature = $this->sig_class->generate_signature(date(DateTimeInterface::ATOM, $timestamp));
+        
         $data = array(
-            'timestamp' => date(DateTimeInterface::ATOM, $timestamp),
+            'timestamp' => $signature["timestamp"],
             'callback_url' => $callback_url != null ? $callback_url : $this->default_callback,
             'partner_id' => $this->partner_id,
             'user_id' => $user_id,
             'job_id' => $job_id,
             'product' => $product_type,
-            'signature' => $this->sig_class->generate_signature($timestamp),
+            'signature' => $signature["signature"],
             'source_sdk' => Config::SDK_CLIENT,
             'source_sdk_version' => Config::VERSION
         );
