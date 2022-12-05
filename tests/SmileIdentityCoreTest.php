@@ -121,9 +121,9 @@ final class SmileIdentityCoreTest extends TestCase
             "camera_config" => null,
             "code" => 2202
         ];
-        $secParam = $this->sic->generate_signature();
-        $timestamp = $secParam['timestamp'];
-        $signature = $secParam['signature'];
+        $signatureKey = $this->sic->generate_signature();
+        $timestamp = $signatureKey['timestamp'];
+        $signature = $signatureKey['signature'];
         $getStatusResult = '{"timestamp": "' . $timestamp . '", "signature": "' . $signature . '", "job_complete": true, "job_success": false, "code": "2302", "result": {}, "history": [], "image_links": {"selfie_image": "https://selfie-image.com"}}';
 
         $mock = new MockHandler([
@@ -190,9 +190,9 @@ final class SmileIdentityCoreTest extends TestCase
             "id_number" => "A00000000",
         ];
         $imageDetails = [["image_type_id" => 0, "image" => "base6image"]];
-        $secParam = $this->sic->generate_signature();
-        $timestamp = $secParam['timestamp'];
-        $signature = $secParam['signature'];
+        $signatureKey = $this->sic->generate_signature();
+        $timestamp = $signatureKey['timestamp'];
+        $signature = $signatureKey['signature'];
         $getStatusResult = '{"timestamp": "' . $timestamp . '", "signature": "' . $signature . '", "job_complete": true, "job_success": false, "code": "2302", "result": {}, "history": [], "image_links": {"selfie_image": "https://selfie-image.com"}}';
 
         $mock = new MockHandler([
@@ -232,9 +232,9 @@ final class SmileIdentityCoreTest extends TestCase
             "id_number" => "A00000000",
         ];
         $imageDetails = [["image_type_id" => 0, "image" => "base6image"]];
-        $secParam = $this->sic->generate_signature();
-        $timestamp = $secParam['timestamp'];
-        $signature = $secParam['signature'];
+        $signatureKey = $this->sic->generate_signature();
+        $timestamp = $signatureKey['timestamp'];
+        $signature = $signatureKey['signature'];
         $getStatusResult = '{"timestamp": "' . $timestamp . '", "signature": "' . $signature . '", "job_complete": true, "job_success": false, "code": "2302", "result": {}, "history": [], "image_links": {"selfie_image": "https://selfie-image.com"}}';
 
         $mock = new MockHandler([
@@ -274,9 +274,9 @@ final class SmileIdentityCoreTest extends TestCase
             "id_number" => "A00000000",
         ];
         $imageDetails = [["image_type_id" => 0, "image" => "base6image"]];
-        $secParam = $this->sic->generate_signature();
-        $timestamp = $secParam['timestamp'];
-        $signature = $secParam['signature'];
+        $signatureKey = $this->sic->generate_signature();
+        $timestamp = $signatureKey['timestamp'];
+        $signature = $signatureKey['signature'];
         $getStatusResult = '{"timestamp": "' . $timestamp . '", "signature": "' . $signature . '", "job_complete": true, "job_success": false, "code": "2302", "result": {}, "history": [], "image_links": {"selfie_image": "https://selfie-image.com"}}';
 
         $mock = new MockHandler([
