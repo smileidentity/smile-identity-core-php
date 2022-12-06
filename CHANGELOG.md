@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.0.0] - 2022-12-06
 ### Added
 - Test against PHP 8.1, 8.0, and 7.4 in github actions.
 - Started tracking changes in changelog.
