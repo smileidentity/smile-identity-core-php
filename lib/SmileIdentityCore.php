@@ -87,10 +87,11 @@ class SmileIdentityCore
         validatePartnerParams($partner_params);
         validateIdParams($id_info, $job_type);
 
-        if ($job_type == 5) {
+        if (in_array(intval($job_type), array(JobType::ENHANCED_KYC, JobType::BUSINESS_VERIFICATION))) {
             $id_api = new IdApi($this->partner_id, $this->default_callback, $this->api_key, $this->sid_server);
             return $id_api->submit_job($partner_params, $id_info, $options);
         }
+
         validateImageParams($image_details, $job_type, key_exists('use_enrolled_image', $options) && $options['use_enrolled_image']);
         validateOptions($options);
 

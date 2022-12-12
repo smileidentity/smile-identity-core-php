@@ -65,6 +65,18 @@ class IdApi
      */
     public function submit_job($partner_params, $id_info, $options): array
     {
+        validatePartnerParams($partner_params);
+
+        $job_type = intval($partner_params["job_type"]);
+        $invalid_job_type = !in_array($job_type, array(JobType::ENHANCED_KYC, JobType::BUSINESS_VERIFICATION));
+        if ($invalid_job_type) {
+            throw new Exception("Please ensure that you are setting your job_type to 5 or 7 to query ID Api");
+        }
+
+        if ($job_type === 7) {
+            return $this->submit_kyb_job($partner_params, $id_info);
+        }
+
         $user_async = array_value_by_key("user_async", $options);
         $signature_params = $this->sig_class->generate_signature();
 
@@ -80,6 +92,26 @@ class IdApi
         $json_data = json_encode($data, JSON_PRETTY_PRINT);
         $url = $user_async ? 'async_id_verification' : 'id_verification';
         $resp = $this->client->post($url, [
+            'content-type' => 'application/json',
+            'body' => $json_data
+        ]);
+        $contents = $resp->getBody()->getContents();
+        return json_decode($contents, true);
+    }
+
+    private function submit_kyb_job($partner_params, $id_info)
+    {
+        $signature_params = $this->sig_class->generate_signature();
+        $data = array(
+            'partner_params' => $partner_params,
+            'partner_id' => $this->partner_id,
+            'source_sdk' => Config::SDK_CLIENT,
+            'source_sdk_version' => Config::VERSION
+        );
+        $data = array_merge($data, $id_info, $signature_params);
+        $json_data = json_encode($data, JSON_PRETTY_PRINT);
+
+        $resp = $this->client->post('business_verification', [
             'content-type' => 'application/json',
             'body' => $json_data
         ]);
