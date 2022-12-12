@@ -1,8 +1,8 @@
 <?php
 
 // Autoload the dependencies
-require 'vendor/autoload.php';
-include 'SmileIdentityCore.php';
+require '/absolute/path/to/vendor/autoload.php';
+include '/absolute/path/to/lib/SmileIdentityCore.php';
 
 // See https://docs.smileidentity.com/server-to-server/ruby/products/document-verification for
 // how to setup and retrieve configuation values for the SmileIdentityCore class.
@@ -20,7 +20,7 @@ $sid_core = new SmileIdentityCore(
     $default_callback,
     $api_key,
     $sid_server
-    );
+);
 
 // Create required tracking parameters
 // Every communication between your server and the Smile Identity servers contain these parameters.

@@ -1,8 +1,8 @@
 <?php
 
 // Autoload the dependencies
-require 'vendor/autoload.php';
-include 'IdApi.php';
+require '/absolute/path/to/vendor/autoload.php';
+include '/absolute/path/to/lib/IdApi.php';
 
 // See https://docs.smileidentity.com/server-to-server/ruby/products/enhanced-kyc for
 // how to setup and retrieve configuation values for the IdApi class.
@@ -20,7 +20,7 @@ $id_api = new IdApi(
     $default_callback,
     $api_key,
     $sid_server
-    );
+);
 
 // Create required tracking parameters
 // Every communication between your server and the Smile Identity servers contain these parameters.
