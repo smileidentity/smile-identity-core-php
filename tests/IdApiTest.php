@@ -68,12 +68,7 @@ final class IdApiTest extends TestCase
         $data = array_merge($this->data, $this->id_info);
         $json_data = json_encode($data, JSON_PRETTY_PRINT);
 
-        $mock = new MockHandler([
-            new Response(200, [], '{"success":true}'),
-        ]);
-
-        $handler = HandlerStack::create($mock);
-        $client = new Client(['handler' => $handler]);
+        $client = $this->getMockClient();
         $this->idApi->setClient($client);
         $job = $this->idApi->submit_job($this->partner_params, $this->id_info, ['use_async' => true]);
         $this->assertEquals(array("success" => true), $job);
@@ -87,14 +82,135 @@ final class IdApiTest extends TestCase
         $data = array_merge($this->data, $this->id_info);
         $json_data = json_encode($data, JSON_PRETTY_PRINT);
 
+        $client = $this->getMockClient();
+        $this->idApi->setClient($client);
+        $job = $this->idApi->submit_job($this->partner_params, $this->id_info, ['use_async' => false]);
+        $this->assertEquals(array("success" => true), $job);
+    }
+
+    public function testKybSuccessForBusinessRegistrationType()
+    {
+        $id_api = new IdApi($this->partner_id, $this->default_callback, $this->api_key, 0);
+
+        $partner_params = array(
+            'user_id' => '1',
+            'job_id' => '1',
+            'job_type' => 7
+        );
+
+        $id_info = array(
+            'country' => 'NG',
+            'id_type' => 'BUSINESS_REGISTRATION',
+            'id_number' => '00000000000',
+        );
+
+        $client = $this->getMockClient();
+        $id_api->setClient($client);
+
+        $job = $id_api->submit_job($partner_params, $id_info, []);
+        $this->assertEquals(array("success" => true), $job);
+    }
+
+    public function testKybSuccessForBasicBusinessRegistrationType()
+    {
+        $id_api = new IdApi($this->partner_id, $this->default_callback, $this->api_key, 0);
+
+        $partner_params = array(
+            'user_id' => '1',
+            'job_id' => '1',
+            'job_type' => 7
+        );
+
+        $id_info = array(
+            'country' => 'NG',
+            'id_type' => 'BASIC_BUSINESS_REGISTRATION',
+            'id_number' => '00000000000',
+        );
+
+        $client = $this->getMockClient();
+        $id_api->setClient($client);
+
+        $job = $id_api->submit_job($partner_params, $id_info, []);
+        $this->assertEquals(array("success" => true), $job);
+    }
+
+    public function testKybSuccessForTaxInformationType()
+    {
+        $id_api = new IdApi($this->partner_id, $this->default_callback, $this->api_key, 0);
+
+        $partner_params = array(
+            'user_id' => '1',
+            'job_id' => '1',
+            'job_type' => 7
+        );
+
+        $id_info = array(
+            'country' => 'NG',
+            'id_type' => 'TAX_INFORMATION',
+            'id_number' => '00000000000',
+        );
+
+        $client = $this->getMockClient();
+        $id_api->setClient($client);
+
+        $job = $id_api->submit_job($partner_params, $id_info, []);
+        $this->assertEquals(array("success" => true), $job);
+    }
+
+    public function testExceptionWhenJobTypeIsInvalid()
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage("Please ensure that you are setting your job_type to 5 or 7 to query ID Api");
+        
+        $api_key = file_get_contents(__DIR__ . "/assets/ApiKey.pub");
+        $id_api = new IdApi(001, "https://callback.smileidentity.com", $api_key, 0);
+
+        $partner_params = array(
+            'user_id' => '1',
+            'job_id' => '1',
+            'job_type' => 2 // invalid
+        );
+
+        $id_info = array(
+            'country' => 'NG',
+            'id_type' => 'BUSINESS_REGISTRATION',
+            'id_number' => '00000000000',
+        );
+
+        $id_api->submit_job($partner_params, $id_info, []);
+    }
+
+    public function testInvalidIdTypeExceptionForKyb()
+    {
+        $expected_types = implode(", ", BusinessVerificationType::ALL);
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("id_type must be one of $expected_types");
+        
+        $api_key = file_get_contents(__DIR__ . "/assets/ApiKey.pub");
+        $id_api = new IdApi(001, "https://callback.smileidentity.com", $api_key, 0);
+
+        $partner_params = array(
+            'user_id' => '1',
+            'job_id' => '1',
+            'job_type' => 7
+        );
+
+        $id_info = array(
+            'country' => 'NG',
+            'id_type' => 'INVALID_TYPE',
+            'id_number' => '00000000000',
+        );
+
+        $id_api->submit_job($partner_params, $id_info, []);
+    }
+
+    private function getMockClient()
+    {
         $mock = new MockHandler([
             new Response(200, [], '{"success":true}'),
         ]);
 
         $handler = HandlerStack::create($mock);
-        $client = new Client(['handler' => $handler]);
-        $this->idApi->setClient($client);
-        $job = $this->idApi->submit_job($this->partner_params, $this->id_info, ['use_async' => false]);
-        $this->assertEquals(array("success" => true), $job);
+        return new Client(['handler' => $handler]);
     }
 }

@@ -52,7 +52,7 @@ final class SmileIdentityCoreTest extends TestCase
         $this->partnerParams = [
             "user_id" => "user-id",
             "job_id" => "job-id",
-            "job_type" => 1,
+            "job_type" => JobType::BIOMETRIC_KYC,
         ];
     }
 
@@ -82,7 +82,7 @@ final class SmileIdentityCoreTest extends TestCase
             "partner_params" => [
                 "job_id" => "php-job-id-04",
                 "user_id" => "php-user-18",
-                "job_type" => 1
+                "job_type" => JobType::BIOMETRIC_KYC
             ],
 
             "smile_client_id" => 212,
@@ -182,7 +182,7 @@ final class SmileIdentityCoreTest extends TestCase
         $partnerParams = [
             "user_id" => "user-id",
             "job_id" => "job-id",
-            "job_type" => 6,
+            "job_type" => JobType::DOCUMENT_VERIFICATION,
         ];
         $idParams = [
             "country" => "NG",
@@ -225,7 +225,7 @@ final class SmileIdentityCoreTest extends TestCase
         $partnerParams = [
             "user_id" => "user-id",
             "job_id" => "job-id",
-            "job_type" => 6,
+            "job_type" => JobType::DOCUMENT_VERIFICATION,
         ];
         $idParams = [
             "id_type" => "PASSPORT",
@@ -267,7 +267,7 @@ final class SmileIdentityCoreTest extends TestCase
         $partnerParams = [
             "user_id" => "user-id",
             "job_id" => "job-id",
-            "job_type" => 6,
+            "job_type" => JobType::DOCUMENT_VERIFICATION,
         ];
         $idParams = [
             "country" => "NG",
@@ -309,7 +309,7 @@ final class SmileIdentityCoreTest extends TestCase
         $partnerParams = [
             "user_id" => "user-id",
             "job_id" => "job-id",
-            "job_type" => 1,
+            "job_type" => JobType::BIOMETRIC_KYC,
         ];
         $idParams = [
             "country" => "NG",

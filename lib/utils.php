@@ -41,11 +41,14 @@ function validateIdParams($id_params, $job_type)
     if ($id_params == null) {
         throw new Exception("Please ensure that you send through partner params");
     }
-    if ($job_type != 6 && (!key_exists("entered", $id_params) || strtolower("{$id_params['entered']}") !== "true")) {
+
+    $not_doc_or_biz_verification = !in_array($job_type, array(JobType::DOCUMENT_VERIFICATION, JobType::BUSINESS_VERIFICATION));
+    if ($not_doc_or_biz_verification && (!key_exists("entered", $id_params) || strtolower("{$id_params['entered']}") !== "true")) {
         return;
     }
+
     $required_fields = ["country", "id_type"];
-    if ($job_type != 6) {
+    if ($job_type != JobType::DOCUMENT_VERIFICATION) {
         $required_fields = array_merge($required_fields, ["id_number"]);
     }
     foreach ($required_fields as $key) {
@@ -56,6 +59,11 @@ function validateIdParams($id_params, $job_type)
         if ($id_params[$key] === null) {
             throw new Exception($message);
         }
+    }
+
+    if ($job_type == JobType::BUSINESS_VERIFICATION && !in_array($id_params["id_type"], BusinessVerificationType::ALL)) {
+        $expected_types = implode(", ", BusinessVerificationType::ALL);
+        throw new InvalidArgumentException("id_type must be one of $expected_types");
     }
 }
 
@@ -85,10 +93,10 @@ function validateImageParams($image_details, $job_type, $use_enrolled_image)
             $has_selfie = true;
         }
     }
-    if ($job_type == 6 && !$has_id_image){
+    if ($job_type == JobType::DOCUMENT_VERIFICATION && !$has_id_image){
         throw new Exception('You are attempting to complete a job type 6 without providing an id card image');
     }
-    if (!($has_selfie || ($job_type == 6 && $use_enrolled_image))) {
+    if (!($has_selfie || ($job_type == JobType::DOCUMENT_VERIFICATION && $use_enrolled_image))) {
         throw new Exception('You need to send through at least one selfie image');
     }
 }
