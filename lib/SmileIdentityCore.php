@@ -187,7 +187,7 @@ class SmileIdentityCore
             return json_decode($resp_result, true);
         } catch (RequestException $e) {
             $resp = $e->getResponse();
-            $result = json_decode(getReasonPhrase, true);
+            $result = json_decode($resp->getReasonPhrase, true);
             $result['statusCode'] = $resp->getStatusCode();
             return $result;
         }

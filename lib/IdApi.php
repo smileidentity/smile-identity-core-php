@@ -95,7 +95,6 @@ class IdApi
             'body' => $json_data
         ]);
         $contents = $resp->getBody()->getContents();
-
         return json_decode($contents, true);
     }
 
