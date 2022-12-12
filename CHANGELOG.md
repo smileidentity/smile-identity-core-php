@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [4.0.1] - 2022-12-12
 ### Added
-- business verification to the iDApi class.
+- Business verification to the iDApi class.
 - [examples](/examples) folder
 
 ## [4.0.0] - 2022-12-06
