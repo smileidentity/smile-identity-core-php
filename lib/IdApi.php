@@ -70,11 +70,7 @@ class IdApi
         $job_type = intval($partner_params["job_type"]);
 
         validateIdParams($id_info, $job_type);
-
-        $invalid_job_type = !in_array($job_type, array(JobType::ENHANCED_KYC, JobType::BUSINESS_VERIFICATION));
-        if ($invalid_job_type) {
-            throw new Exception("Please ensure that you are setting your job_type to 5 or 7 to query ID Api");
-        }
+        validateJobTypes(array(JobType::ENHANCED_KYC, JobType::BUSINESS_VERIFICATION), $job_type);
 
         if ($job_type === JobType::BUSINESS_VERIFICATION) {
             return $this->submit_kyb_job($partner_params, $id_info);
@@ -99,6 +95,7 @@ class IdApi
             'body' => $json_data
         ]);
         $contents = $resp->getBody()->getContents();
+
         return json_decode($contents, true);
     }
 

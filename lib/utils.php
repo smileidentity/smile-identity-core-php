@@ -119,6 +119,21 @@ function validateOptions($options)
     }
 }
 
+/**
+ * 
+ * @param array $expected_types Array of expected job IDs
+ * @param integer $job_type User provided job ID
+ * 
+ * @throws Exception
+ */
+function validateJobTypes($expected_types, $job_type)
+{
+    if (!in_array($job_type, $expected_types)) {
+        $expected_values = implode(", ", $expected_types);
+        throw new InvalidArgumentException("job_type must be one of $expected_values");
+    }
+}
+
 function array_value_by_key($key, $array)
 {
     if (key_exists($key, $array)) {

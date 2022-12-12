@@ -159,8 +159,9 @@ final class IdApiTest extends TestCase
 
     public function testExceptionWhenJobTypeIsInvalid()
     {
+        $expected_values = implode(", ", array(JobType::ENHANCED_KYC, JobType::BUSINESS_VERIFICATION));
         $this->expectException(Exception::class);
-        $this->expectExceptionMessage("Please ensure that you are setting your job_type to 5 or 7 to query ID Api");
+        $this->expectExceptionMessage("job_type must be one of $expected_values");
         
         $api_key = file_get_contents(__DIR__ . "/assets/ApiKey.pub");
         $id_api = new IdApi(001, "https://callback.smileidentity.com", $api_key, 0);
