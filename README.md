@@ -44,6 +44,8 @@ The Utilities Class allows you as the Partner to have access to our general Util
 
 For extensive instructions on usage of the library and sample codes, please refer to the [official Smile Identity documentation](https://docs.smileidentity.com/server-to-server/php).
 
+Before that, you should take a look at the examples in the [examples](/examples) folder.
+
 ## Installation
 
 ### Installing from the Repository
