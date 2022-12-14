@@ -28,7 +28,7 @@ $id_api = new IdApi(
 $partner_params = array(
   'job_id' => '<put your unique ID for the user here>',
   'user_id' => '<put unique job ID here',
-  'job_type' => 5,
+  'job_type' => JobType::ENHANCED_KYC,
 );
 
 // Create ID number info

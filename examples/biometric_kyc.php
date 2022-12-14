@@ -28,7 +28,7 @@ $sid_core = new SmileIdentityCore(
 $partner_params = array(
   'job_id' => '<put your unique ID for the user here>',
   'user_id' => '<put unique job ID here',
-  'job_type' => 1,
+  'job_type' => JobType::BIOMETRIC_KYC,
 );
 
 // Create ID number info
@@ -54,12 +54,12 @@ $id_info = array(
 $selfie_filename = 'tmp/selife.jpg'; // Path to selfie image file
 $id_card_filename = 'tmp/idcard.jpg'; // Path to idcard image file
 $selfie_image_detail = array(
-    'image_type_id' => 0, // Selfie image jpg or png
+    'image_type_id' => ImageType::SELFIE_FILE, // Selfie image jpg or png
     'image' => $selfie_filename
 );
 // ID card image can be omitted if selfie comparison to issuer image is desired
 $id_card_image_detail = array(
-    'image_type_id' => 1, // ID card image jpg or png
+    'image_type_id' => ImageType::ID_CARD_FILE, // ID card image jpg or png
     'image' => $id_card_filename
 );
 $image_details = array(
