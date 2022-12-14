@@ -4,10 +4,10 @@
 require '/absolute/path/to/vendor/autoload.php';
 include '/absolute/path/to/lib/IdApi.php';
 
-// See https://docs.smileidentity.com/server-to-server/ruby/products/enhanced-kyc for
+// See https://docs.smileidentity.com/server-to-server/php/products/enhanced-kyc for
 // how to setup and retrieve configuation values for the IdApi class.
 
-$partner_id = '<Put your 3 digit partner ID here>';
+$partner_id = '<Put your partner ID here>';
 $default_callback = '<Put your default callback url here>';
 // You can download your API key from the Smile Identity portal.
 // NOTE: The sandbox and production servers use different API keys.

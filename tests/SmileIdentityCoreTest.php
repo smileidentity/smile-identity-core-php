@@ -189,7 +189,7 @@ final class SmileIdentityCoreTest extends TestCase
             "id_type" => "PASSPORT",
             "id_number" => "A00000000",
         ];
-        $imageDetails = [["image_type_id" => 0, "image" => "base6image"]];
+        $imageDetails = [["image_type_id" => ImageType::SELFIE_FILE, "image" => "base6image"]];
         $signatureKey = $this->sic->generate_signature();
         $timestamp = $signatureKey['timestamp'];
         $signature = $signatureKey['signature'];
@@ -231,7 +231,7 @@ final class SmileIdentityCoreTest extends TestCase
             "id_type" => "PASSPORT",
             "id_number" => "A00000000",
         ];
-        $imageDetails = [["image_type_id" => 0, "image" => "base6image"]];
+        $imageDetails = [["image_type_id" => ImageType::SELFIE_FILE, "image" => "base6image"]];
         $signatureKey = $this->sic->generate_signature();
         $timestamp = $signatureKey['timestamp'];
         $signature = $signatureKey['signature'];
@@ -273,7 +273,7 @@ final class SmileIdentityCoreTest extends TestCase
             "country" => "NG",
             "id_number" => "A00000000",
         ];
-        $imageDetails = [["image_type_id" => 0, "image" => "base6image"]];
+        $imageDetails = [["image_type_id" => ImageType::SELFIE_FILE, "image" => "base6image"]];
         $signatureKey = $this->sic->generate_signature();
         $timestamp = $signatureKey['timestamp'];
         $signature = $signatureKey['signature'];
@@ -315,7 +315,7 @@ final class SmileIdentityCoreTest extends TestCase
             "country" => "NG",
             "id_number" => "A00000000",
         ];
-        $imageDetails = [["image_type_id" => 1, "image" => "base6image"]];
+        $imageDetails = [["image_type_id" => ImageType::ID_CARD_FILE, "image" => "base6image"]];
         $sigParam = $this->sic->generate_signature();
         $timestamp = $sigParam['timestamp'];
         $signature = $sigParam['signature'];

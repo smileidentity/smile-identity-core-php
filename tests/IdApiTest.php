@@ -35,7 +35,7 @@ final class IdApiTest extends TestCase
         $this->partner_params = array(
             'user_id' => '1',
             'job_id' => '1',
-            'job_type' => 5
+            'job_type' => JobType::ENHANCED_KYC
         );
 
         $this->id_info = array(
@@ -95,7 +95,7 @@ final class IdApiTest extends TestCase
         $partner_params = array(
             'user_id' => '1',
             'job_id' => '1',
-            'job_type' => 7
+            'job_type' => JobType::BUSINESS_VERIFICATION
         );
 
         $id_info = array(
@@ -118,7 +118,7 @@ final class IdApiTest extends TestCase
         $partner_params = array(
             'user_id' => '1',
             'job_id' => '1',
-            'job_type' => 7
+            'job_type' => JobType::BUSINESS_VERIFICATION
         );
 
         $id_info = array(
@@ -141,7 +141,7 @@ final class IdApiTest extends TestCase
         $partner_params = array(
             'user_id' => '1',
             'job_id' => '1',
-            'job_type' => 7
+            'job_type' => JobType::BUSINESS_VERIFICATION
         );
 
         $id_info = array(
@@ -193,7 +193,7 @@ final class IdApiTest extends TestCase
         $partner_params = array(
             'user_id' => '1',
             'job_id' => '1',
-            'job_type' => 7
+            'job_type' => JobType::BUSINESS_VERIFICATION
         );
 
         $id_info = array(

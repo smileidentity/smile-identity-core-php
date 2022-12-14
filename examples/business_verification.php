@@ -7,7 +7,7 @@ include '/absolute/path/to/lib/IdApi.php';
 // See https://docs.smileidentity.com/products/for-businesses-kyb/business-verification for
 // more information on business verification
 
-$partner_id = '<Put your 3 digit partner ID here>';
+$partner_id = '<Put your partner ID here>';
 $default_callback = '<Put your default callback url here>';
 // You can download your API key from the Smile Identity portal.
 // NOTE: The sandbox and production servers use different API keys.
