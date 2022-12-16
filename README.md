@@ -12,7 +12,7 @@ The library exposes four classes namely; the WebApi class, the IDApi class, the 
 
 The WebApi class has the following public methods:
 
-- `submit_job` - handles submission of any of Smile Identity products that requires an image i.e. [Biometric KYC](https://docs.smileidentity.com/products/biometric-kyc), [Document Verification](https://docs.smileidentity.com/products/document-verification) and [SmartSelfieTM Authentication](https://docs.smileidentity.com/products/biometric-authentication).
+- `submit_job` - handles submission of any of Smile Identity products that requires an image i.e. [Biometric KYC](https://docs.smileidentity.com/products/biometric-kyc), [Document Verification](https://docs.smileidentity.com/products/document-verification), [SmartSelfieTM Authentication](https://docs.smileidentity.com/products/biometric-authentication) and [Business Verification](https://docs.smileidentity.com/products/for-businesses-kyb/business-verification).
 - `get_web_token` - handles generation of web token, if you are using the [Hosted Web Integration](https://docs.smileidentity.com/web-mobile-web/web-integration-beta).
 
 The IDApi class has the following public method:
