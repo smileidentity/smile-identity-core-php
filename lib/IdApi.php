@@ -65,6 +65,13 @@ class IdApi
      */
     public function submit_job($partner_params, $id_info, $options): array
     {
+        validatePartnerParams($partner_params);
+
+        $job_type = intval($partner_params["job_type"]);
+
+        validateIdParams($id_info, $job_type);
+        validateJobTypes(array(JobType::ENHANCED_KYC), $job_type);
+
         $user_async = array_value_by_key("user_async", $options);
         $signature_params = $this->sig_class->generate_signature();
 

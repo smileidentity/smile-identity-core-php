@@ -35,7 +35,7 @@ final class IdApiTest extends TestCase
         $this->partner_params = array(
             'user_id' => '1',
             'job_id' => '1',
-            'job_type' => 5
+            'job_type' => JobType::ENHANCED_KYC
         );
 
         $this->id_info = array(
@@ -68,12 +68,7 @@ final class IdApiTest extends TestCase
         $data = array_merge($this->data, $this->id_info);
         $json_data = json_encode($data, JSON_PRETTY_PRINT);
 
-        $mock = new MockHandler([
-            new Response(200, [], '{"success":true}'),
-        ]);
-
-        $handler = HandlerStack::create($mock);
-        $client = new Client(['handler' => $handler]);
+        $client = $this->getMockClient();
         $this->idApi->setClient($client);
         $job = $this->idApi->submit_job($this->partner_params, $this->id_info, ['use_async' => true]);
         $this->assertEquals(array("success" => true), $job);
@@ -87,14 +82,43 @@ final class IdApiTest extends TestCase
         $data = array_merge($this->data, $this->id_info);
         $json_data = json_encode($data, JSON_PRETTY_PRINT);
 
+        $client = $this->getMockClient();
+        $this->idApi->setClient($client);
+        $job = $this->idApi->submit_job($this->partner_params, $this->id_info, ['use_async' => false]);
+        $this->assertEquals(array("success" => true), $job);
+    }
+
+    public function testExceptionWhenJobTypeIsInvalid()
+    {
+        $expected_values = implode(", ", array(JobType::ENHANCED_KYC));
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage("job_type must be one of $expected_values");
+        
+        $api_key = file_get_contents(__DIR__ . "/assets/ApiKey.pub");
+        $id_api = new IdApi(001, "https://callback.smileidentity.com", $api_key, 0);
+
+        $partner_params = array(
+            'user_id' => '1',
+            'job_id' => '1',
+            'job_type' => 2 // invalid
+        );
+
+        $id_info = array(
+            'country' => 'NG',
+            'id_type' => 'PASSPORT',
+            'id_number' => '00000000000',
+        );
+
+        $id_api->submit_job($partner_params, $id_info, []);
+    }
+
+    private function getMockClient()
+    {
         $mock = new MockHandler([
             new Response(200, [], '{"success":true}'),
         ]);
 
         $handler = HandlerStack::create($mock);
-        $client = new Client(['handler' => $handler]);
-        $this->idApi->setClient($client);
-        $job = $this->idApi->submit_job($this->partner_params, $this->id_info, ['use_async' => false]);
-        $this->assertEquals(array("success" => true), $job);
+        return new Client(['handler' => $handler]);
     }
 }

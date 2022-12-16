@@ -52,7 +52,7 @@ final class SmileIdentityCoreTest extends TestCase
         $this->partnerParams = [
             "user_id" => "user-id",
             "job_id" => "job-id",
-            "job_type" => 1,
+            "job_type" => JobType::BIOMETRIC_KYC,
         ];
     }
 
@@ -82,7 +82,7 @@ final class SmileIdentityCoreTest extends TestCase
             "partner_params" => [
                 "job_id" => "php-job-id-04",
                 "user_id" => "php-user-18",
-                "job_type" => 1
+                "job_type" => JobType::BIOMETRIC_KYC
             ],
 
             "smile_client_id" => 212,
@@ -182,14 +182,14 @@ final class SmileIdentityCoreTest extends TestCase
         $partnerParams = [
             "user_id" => "user-id",
             "job_id" => "job-id",
-            "job_type" => 6,
+            "job_type" => JobType::DOCUMENT_VERIFICATION,
         ];
         $idParams = [
             "country" => "NG",
             "id_type" => "PASSPORT",
             "id_number" => "A00000000",
         ];
-        $imageDetails = [["image_type_id" => 0, "image" => "base6image"]];
+        $imageDetails = [["image_type_id" => ImageType::SELFIE_FILE, "image" => "base6image"]];
         $signatureKey = $this->sic->generate_signature();
         $timestamp = $signatureKey['timestamp'];
         $signature = $signatureKey['signature'];
@@ -225,13 +225,13 @@ final class SmileIdentityCoreTest extends TestCase
         $partnerParams = [
             "user_id" => "user-id",
             "job_id" => "job-id",
-            "job_type" => 6,
+            "job_type" => JobType::DOCUMENT_VERIFICATION,
         ];
         $idParams = [
             "id_type" => "PASSPORT",
             "id_number" => "A00000000",
         ];
-        $imageDetails = [["image_type_id" => 0, "image" => "base6image"]];
+        $imageDetails = [["image_type_id" => ImageType::SELFIE_FILE, "image" => "base6image"]];
         $signatureKey = $this->sic->generate_signature();
         $timestamp = $signatureKey['timestamp'];
         $signature = $signatureKey['signature'];
@@ -267,13 +267,13 @@ final class SmileIdentityCoreTest extends TestCase
         $partnerParams = [
             "user_id" => "user-id",
             "job_id" => "job-id",
-            "job_type" => 6,
+            "job_type" => JobType::DOCUMENT_VERIFICATION,
         ];
         $idParams = [
             "country" => "NG",
             "id_number" => "A00000000",
         ];
-        $imageDetails = [["image_type_id" => 0, "image" => "base6image"]];
+        $imageDetails = [["image_type_id" => ImageType::SELFIE_FILE, "image" => "base6image"]];
         $signatureKey = $this->sic->generate_signature();
         $timestamp = $signatureKey['timestamp'];
         $signature = $signatureKey['signature'];
@@ -309,13 +309,13 @@ final class SmileIdentityCoreTest extends TestCase
         $partnerParams = [
             "user_id" => "user-id",
             "job_id" => "job-id",
-            "job_type" => 1,
+            "job_type" => JobType::BIOMETRIC_KYC,
         ];
         $idParams = [
             "country" => "NG",
             "id_number" => "A00000000",
         ];
-        $imageDetails = [["image_type_id" => 1, "image" => "base6image"]];
+        $imageDetails = [["image_type_id" => ImageType::ID_CARD_FILE, "image" => "base6image"]];
         $sigParam = $this->sic->generate_signature();
         $timestamp = $sigParam['timestamp'];
         $signature = $sigParam['signature'];
@@ -381,5 +381,145 @@ final class SmileIdentityCoreTest extends TestCase
         
         $result = $this->sic->query_smile_id_services();
         $this->assertEquals($result, $expectedResult);
+    }
+
+    public function testKybSuccessForBusinessRegistrationType()
+    {
+        $default_callback = 'https://google.com';
+        $api_key = file_get_contents(__DIR__ . "/assets/ApiKey.pub");
+        $sid_core = new SmileIdentityCore($this->partner_id, $default_callback, $api_key, $this->sid_server);
+
+        $partner_params = array(
+            'user_id' => '1',
+            'job_id' => '1',
+            'job_type' => JobType::BUSINESS_VERIFICATION
+        );
+
+        $id_info = array(
+            'country' => 'NG',
+            'id_type' => 'BUSINESS_REGISTRATION',
+            'id_number' => '00000000000',
+        );
+
+        $client = $this->getMockClient();
+        $sid_core->setClient($client);
+
+        $job = $sid_core->submit_job($partner_params, [], $id_info, []);
+        $this->assertEquals(array("success" => true), $job);
+    }
+
+    public function testKybSuccessForBasicBusinessRegistrationType()
+    {
+        $default_callback = 'https://google.com';
+        $api_key = file_get_contents(__DIR__ . "/assets/ApiKey.pub");
+        $sid_core = new SmileIdentityCore($this->partner_id, $default_callback, $api_key, $this->sid_server);
+
+        $partner_params = array(
+            'user_id' => '1',
+            'job_id' => '1',
+            'job_type' => JobType::BUSINESS_VERIFICATION
+        );
+
+        $id_info = array(
+            'country' => 'NG',
+            'id_type' => 'BASIC_BUSINESS_REGISTRATION',
+            'id_number' => '00000000000',
+        );
+
+        $client = $this->getMockClient();
+        $sid_core->setClient($client);
+
+        $job = $sid_core->submit_job($partner_params, [], $id_info, []);
+        $this->assertEquals(array("success" => true), $job);
+    }
+
+    public function testKybSuccessForTaxInformationType()
+    {
+        $default_callback = 'https://google.com';
+        $api_key = file_get_contents(__DIR__ . "/assets/ApiKey.pub");
+        $sid_core = new SmileIdentityCore($this->partner_id, $default_callback, $api_key, $this->sid_server);
+
+        $partner_params = array(
+            'user_id' => '1',
+            'job_id' => '1',
+            'job_type' => JobType::BUSINESS_VERIFICATION
+        );
+
+        $id_info = array(
+            'country' => 'NG',
+            'id_type' => 'TAX_INFORMATION',
+            'id_number' => '00000000000',
+        );
+
+        $client = $this->getMockClient();
+        $sid_core->setClient($client);
+
+        $job = $sid_core->submit_job($partner_params, [], $id_info, []);
+        $this->assertEquals(array("success" => true), $job);
+    }
+
+    public function testExceptionWhenJobTypeIsInvalid()
+    {
+        $expected_values = implode(", ", array(
+            JobType::BIOMETRIC_KYC,
+            JobType::DOCUMENT_VERIFICATION,
+            JobType::SMART_SELFIE_AUTHENTICATION,
+            JobType::BUSINESS_VERIFICATION
+        ));
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage("job_type must be one of $expected_values");
+        
+        $api_key = file_get_contents(__DIR__ . "/assets/ApiKey.pub");
+        $default_callback = 'https://google.com';
+        $sid_core = new SmileIdentityCore($this->partner_id, $default_callback, $api_key, $this->sid_server);
+
+        $partner_params = array(
+            'user_id' => '1',
+            'job_id' => '1',
+            'job_type' => 50 // invalid
+        );
+
+        $id_info = array(
+            'country' => 'NG',
+            'id_type' => 'BUSINESS_REGISTRATION',
+            'id_number' => '00000000000',
+        );
+
+        $sid_core->submit_job($partner_params, [], $id_info, []);
+    }
+
+    public function testInvalidIdTypeExceptionForKyb()
+    {
+        $expected_types = implode(", ", BusinessVerificationType::ALL);
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("id_type must be one of $expected_types");
+        
+        $api_key = file_get_contents(__DIR__ . "/assets/ApiKey.pub");
+        $default_callback = 'https://google.com';
+        $sid_core = new SmileIdentityCore($this->partner_id, $default_callback, $api_key, $this->sid_server);
+
+        $partner_params = array(
+            'user_id' => '1',
+            'job_id' => '1',
+            'job_type' => JobType::BUSINESS_VERIFICATION
+        );
+
+        $id_info = array(
+            'country' => 'NG',
+            'id_type' => 'INVALID_TYPE',
+            'id_number' => '00000000000',
+        );
+
+        $sid_core->submit_job($partner_params, [], $id_info, []);
+    }
+
+    private function getMockClient()
+    {
+        $mock = new MockHandler([
+            new Response(200, [], '{"success":true}'),
+        ]);
+
+        $handler = HandlerStack::create($mock);
+        return new Client(['handler' => $handler]);
     }
 }
