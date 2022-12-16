@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Business verification to the iDApi class.
+- Business verification to the SmileIdentityCore class.
 - JobType, ImageType, and BusinessVerificationType enum classes
 - [examples](/examples) folder
 
