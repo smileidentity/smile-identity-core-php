@@ -1,8 +1,8 @@
 <?php
 
 // Autoload the dependencies
-require '/absolute/path/to/vendor/autoload.php';
-include '/absolute/path/to/lib/IdApi.php';
+require 'vendor/autoload.php';
+include 'SmileIdentityCore.php';
 
 // See https://docs.smileidentity.com/products/for-businesses-kyb/business-verification for
 // more information on business verification
@@ -15,7 +15,7 @@ $api_key = '<Put your base64 encoded API key here>';
 // Use '0' for the sandbox (test) server, use '1' for production server
 $sid_server = '0';
 
-$id_api = new IdApi(
+$sid_core = new SmileIdentityCore(
     $partner_id,
     $default_callback,
     $api_key,
@@ -48,4 +48,4 @@ $id_info = array(
 
 // submit_job returns an array with at least a Boolean using the key "success" and the Smile Identity job number.
 // If options.return_job_status is true it will add to the array the returned job_status information.
-$result = $id_api->submit_job($partner_params, $id_info, array());
+$result = $sid_core->submit_job($partner_params, [], $id_info, array());

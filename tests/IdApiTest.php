@@ -88,78 +88,9 @@ final class IdApiTest extends TestCase
         $this->assertEquals(array("success" => true), $job);
     }
 
-    public function testKybSuccessForBusinessRegistrationType()
-    {
-        $id_api = new IdApi($this->partner_id, $this->default_callback, $this->api_key, 0);
-
-        $partner_params = array(
-            'user_id' => '1',
-            'job_id' => '1',
-            'job_type' => JobType::BUSINESS_VERIFICATION
-        );
-
-        $id_info = array(
-            'country' => 'NG',
-            'id_type' => 'BUSINESS_REGISTRATION',
-            'id_number' => '00000000000',
-        );
-
-        $client = $this->getMockClient();
-        $id_api->setClient($client);
-
-        $job = $id_api->submit_job($partner_params, $id_info, []);
-        $this->assertEquals(array("success" => true), $job);
-    }
-
-    public function testKybSuccessForBasicBusinessRegistrationType()
-    {
-        $id_api = new IdApi($this->partner_id, $this->default_callback, $this->api_key, 0);
-
-        $partner_params = array(
-            'user_id' => '1',
-            'job_id' => '1',
-            'job_type' => JobType::BUSINESS_VERIFICATION
-        );
-
-        $id_info = array(
-            'country' => 'NG',
-            'id_type' => 'BASIC_BUSINESS_REGISTRATION',
-            'id_number' => '00000000000',
-        );
-
-        $client = $this->getMockClient();
-        $id_api->setClient($client);
-
-        $job = $id_api->submit_job($partner_params, $id_info, []);
-        $this->assertEquals(array("success" => true), $job);
-    }
-
-    public function testKybSuccessForTaxInformationType()
-    {
-        $id_api = new IdApi($this->partner_id, $this->default_callback, $this->api_key, 0);
-
-        $partner_params = array(
-            'user_id' => '1',
-            'job_id' => '1',
-            'job_type' => JobType::BUSINESS_VERIFICATION
-        );
-
-        $id_info = array(
-            'country' => 'NG',
-            'id_type' => 'TAX_INFORMATION',
-            'id_number' => '00000000000',
-        );
-
-        $client = $this->getMockClient();
-        $id_api->setClient($client);
-
-        $job = $id_api->submit_job($partner_params, $id_info, []);
-        $this->assertEquals(array("success" => true), $job);
-    }
-
     public function testExceptionWhenJobTypeIsInvalid()
     {
-        $expected_values = implode(", ", array(JobType::ENHANCED_KYC, JobType::BUSINESS_VERIFICATION));
+        $expected_values = implode(", ", array(JobType::ENHANCED_KYC));
         $this->expectException(Exception::class);
         $this->expectExceptionMessage("job_type must be one of $expected_values");
         
@@ -174,31 +105,7 @@ final class IdApiTest extends TestCase
 
         $id_info = array(
             'country' => 'NG',
-            'id_type' => 'BUSINESS_REGISTRATION',
-            'id_number' => '00000000000',
-        );
-
-        $id_api->submit_job($partner_params, $id_info, []);
-    }
-
-    public function testInvalidIdTypeExceptionForKyb()
-    {
-        $expected_types = implode(", ", BusinessVerificationType::ALL);
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("id_type must be one of $expected_types");
-        
-        $api_key = file_get_contents(__DIR__ . "/assets/ApiKey.pub");
-        $id_api = new IdApi(001, "https://callback.smileidentity.com", $api_key, 0);
-
-        $partner_params = array(
-            'user_id' => '1',
-            'job_id' => '1',
-            'job_type' => JobType::BUSINESS_VERIFICATION
-        );
-
-        $id_info = array(
-            'country' => 'NG',
-            'id_type' => 'INVALID_TYPE',
+            'id_type' => 'PASSPORT',
             'id_number' => '00000000000',
         );
 

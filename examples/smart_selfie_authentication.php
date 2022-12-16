@@ -1,8 +1,8 @@
 <?php
 
 // Autoload the dependencies
-require '/absolute/path/to/vendor/autoload.php';
-include '/absolute/path/to/lib/SmileIdentityCore.php';
+require 'vendor/autoload.php';
+include 'SmileIdentityCore.php';
 
 // See https://docs.smileidentity.com/server-to-server/php/products/smartselfie-tm-authentication for
 // how to setup and retrieve configuation values for the SmileIdentityCore class.

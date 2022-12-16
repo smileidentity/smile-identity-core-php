@@ -80,23 +80,34 @@ class SmileIdentityCore
      */
     public function submit_job($partner_params, $image_details, $id_info, $_options)
     {
-        $options = $this->getOptions($_options);
+        validatePartnerParams($partner_params);
+
         $job_type = $partner_params['job_type'];
 
-        //TODO: add data validation
-        validatePartnerParams($partner_params);
         validateIdParams($id_info, $job_type);
 
-        if (in_array(intval($job_type), array(JobType::ENHANCED_KYC, JobType::BUSINESS_VERIFICATION))) {
+        $options = $this->getOptions($_options);
+
+        if ($job_type === JobType::ENHANCED_KYC) {
             $id_api = new IdApi($this->partner_id, $this->default_callback, $this->api_key, $this->sid_server);
             return $id_api->submit_job($partner_params, $id_info, $options);
+        }
+
+        validateJobTypes(array(
+            JobType::BIOMETRIC_KYC,
+            JobType::DOCUMENT_VERIFICATION,
+            JobType::SMART_SELFIE_AUTHENTICATION,
+            JobType::BUSINESS_VERIFICATION
+        ), $job_type);
+
+        if ($job_type === JobType::BUSINESS_VERIFICATION) {
+            return $this->submit_kyb_job($partner_params, $id_info);
         }
 
         validateImageParams($image_details, $job_type, key_exists('use_enrolled_image', $options) && $options['use_enrolled_image']);
         validateOptions($options);
 
         $signature_params = $this->sig_class->generate_signature();
-
         $response_body = $this->call_prep_upload($partner_params, $options, $signature_params);
         $code = array_value_by_key('code', $response_body);
         if ($code != '2202') {
@@ -419,6 +430,34 @@ class SmileIdentityCore
             $options["optional_callback"] = $this->default_callback;
         }
         return $options;
+    }
+
+    /**
+     * Submits business verification jobs
+     * @param array $partner_params a key-value pair object containing partner's specified parameters
+     * @param array $id_info a key-value pair object containing user's specified ID information
+     * @return ResponseInterface
+     * @throws GuzzleException
+     * @throws Exception
+     */
+    private function submit_kyb_job($partner_params, $id_info)
+    {
+        $signature_params = $this->sig_class->generate_signature();
+        $data = array(
+            'partner_params' => $partner_params,
+            'partner_id' => $this->partner_id,
+            'source_sdk' => Config::SDK_CLIENT,
+            'source_sdk_version' => Config::VERSION
+        );
+        $data = array_merge($data, $id_info, $signature_params);
+        $json_data = json_encode($data, JSON_PRETTY_PRINT);
+
+        $resp = $this->client->post('business_verification', [
+            'content-type' => 'application/json',
+            'body' => $json_data
+        ]);
+        $contents = $resp->getBody()->getContents();
+        return json_decode($contents, true);
     }
 
     /**

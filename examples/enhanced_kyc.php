@@ -1,8 +1,8 @@
 <?php
 
 // Autoload the dependencies
-require '/absolute/path/to/vendor/autoload.php';
-include '/absolute/path/to/lib/IdApi.php';
+require 'vendor/autoload.php';
+include 'IdApi.php';
 
 // See https://docs.smileidentity.com/server-to-server/php/products/enhanced-kyc for
 // how to setup and retrieve configuation values for the IdApi class.
