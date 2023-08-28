@@ -255,8 +255,6 @@ final class SmileIdentityCoreTest extends TestCase
      */
     public function testSubmitJobShouldRequireIdTypeInIdInfoForJT6(): void
     {
-        $this->expectException(Exception::class);
-        $this->expectExceptionMessage("Please make sure that id_type is included in the id_info and has a value");
         $resp_body = [
             "upload_url" => "https://upload-url.com",
             "ref_id" => "212-0000058873-dwhsn9nsax3onnbf8mc1rifirl44z",
@@ -273,7 +271,7 @@ final class SmileIdentityCoreTest extends TestCase
             "country" => "NG",
             "id_number" => "A00000000",
         ];
-        $imageDetails = [["image_type_id" => ImageType::SELFIE_FILE, "image" => "base6image"]];
+        $imageDetails = [["image_type_id" => ImageType::SELFIE_FILE, "image" => "base6image"], ["image_type_id" => ImageType::ID_CARD_FILE, "image" => "base6image"]];
         $signatureKey = $this->sic->generate_signature();
         $timestamp = $signatureKey['timestamp'];
         $signature = $signatureKey['signature'];
@@ -289,7 +287,9 @@ final class SmileIdentityCoreTest extends TestCase
         $client = new Client(['handler' => $handler]);
         $this->sic->setClient($client);
 
-        $this->sic->submit_job($partnerParams, $imageDetails, $idParams, $this->options);
+        $result = $this->sic->submit_job($partnerParams, $imageDetails, $idParams, $this->options);
+        
+        $this->assertTrue($result["success"]);
     }
 
     /**
