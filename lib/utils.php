@@ -47,9 +47,10 @@ function validateIdParams($id_params, $job_type)
         return;
     }
 
-    $required_fields = ["country", "id_type"];
-    if ($job_type != JobType::DOCUMENT_VERIFICATION) {
-        $required_fields = array_merge($required_fields, ["id_number"]);
+    if ($job_type == JobType::DOCUMENT_VERIFICATION) {
+        $required_fields = ["country"];
+    } else {
+        $required_fields = ["country", "id_number", "id_type"];
     }
     foreach ($required_fields as $key) {
         $message = "Please make sure that $key is included in the id_info and has a value";

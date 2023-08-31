@@ -404,7 +404,7 @@ class SmileIdentityCore
         $zip = new ZipArchive();
 
         // Zip will open and overwrite the file, rather than try to read it.
-        $res = $zip->open($file, ZipArchive::CREATE);
+        $res = $zip->open($file, ZipArchive::OVERWRITE);
         if ($res === TRUE) {
             $zip->addFromString('info.json', json_encode($info_json, JSON_PRETTY_PRINT));
             foreach ($images_info as $image) {
