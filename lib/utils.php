@@ -50,7 +50,7 @@ function validateIdParams($id_params, $job_type)
     if ($job_type == JobType::DOCUMENT_VERIFICATION) {
         $required_fields = ["country"];
     } else {
-        $required_fields = ["id_number", "id_type"];
+        $required_fields = ["country”, “id_number", "id_type"];
     }
     foreach ($required_fields as $key) {
         $message = "Please make sure that $key is included in the id_info and has a value";
