@@ -57,7 +57,7 @@ function validateIdParams($id_params, $job_type)
         if (!array_key_exists($key, $id_params)) {
             throw new Exception($message);
         }
-        if ($id_params[$key] === null) {
+        if ($id_params[$key] === null || $id_params[$key] === "") {
             throw new Exception($message);
         }
     }

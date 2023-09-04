@@ -34,7 +34,7 @@ $partner_params = array(
 // The ID Document Information
 $id_info = array(
   'country' => '<2-letter country code>',
-  'id_type' => '<id type>'
+  'id_type' => '<id type | null>' // id_type is optional. If a job is submitted without id_type and the machine can't classify the document, we will reject the job
 );
 
 // Create image list
