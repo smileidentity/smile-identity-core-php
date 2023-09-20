@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ID type is now optional for docV
 
 ### Added
+- Added Enhanced Document Verification to the SmileIdentityCore class.
 - Business verification to the SmileIdentityCore class.
 - JobType, ImageType, and BusinessVerificationType enum classes
 - [examples](/examples) folder

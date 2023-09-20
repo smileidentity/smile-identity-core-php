@@ -28,4 +28,7 @@ class JobType
 
     // Compares document verification to an id check
     const COMPARE_USER_INFO = 9;
+
+    // Verifies user selfie with info retrieved from the ID issuing authority.
+    const ENHANCED_DOCUMENT_VERIFICATION = 11;
 }

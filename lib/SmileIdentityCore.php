@@ -95,9 +95,10 @@ class SmileIdentityCore
 
         validateJobTypes(array(
             JobType::BIOMETRIC_KYC,
+            JobType::BUSINESS_VERIFICATION,
             JobType::DOCUMENT_VERIFICATION,
+            JobType::ENHANCED_DOCUMENT_VERIFICATION,
             JobType::SMART_SELFIE_AUTHENTICATION,
-            JobType::BUSINESS_VERIFICATION
         ), $job_type);
 
         if ($job_type === JobType::BUSINESS_VERIFICATION) {
