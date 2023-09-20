@@ -97,6 +97,7 @@ class SmileIdentityCore
             JobType::BIOMETRIC_KYC,
             JobType::DOCUMENT_VERIFICATION,
             JobType::SMART_SELFIE_AUTHENTICATION,
+            JobType::SMART_SELFIE_REGISTRATION,
             JobType::BUSINESS_VERIFICATION
         ), $job_type);
 
