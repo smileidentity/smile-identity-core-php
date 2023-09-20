@@ -464,6 +464,7 @@ final class SmileIdentityCoreTest extends TestCase
             JobType::BIOMETRIC_KYC,
             JobType::DOCUMENT_VERIFICATION,
             JobType::SMART_SELFIE_AUTHENTICATION,
+            JobType::SMART_SELFIE_REGISTRATION,
             JobType::BUSINESS_VERIFICATION
         ));
         $this->expectException(Exception::class);
