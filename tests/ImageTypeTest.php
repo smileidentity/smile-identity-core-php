@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 
+use SmileIdentity\ImageType;
 use PHPUnit\Framework\TestCase;
 
 final class ImageTypeTest extends TestCase

@@ -1,5 +1,7 @@
 <?php
 
+namespace SmileIdentity;
+
 class JobType
 {
     // Verifies the ID information of your users using facial biometrics

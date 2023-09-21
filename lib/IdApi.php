@@ -1,15 +1,17 @@
 <?php
-spl_autoload_register(function ($class) {
-    require_once($class . '.php');
-});
+
+namespace SmileIdentity;
+// spl_autoload_register(function ($class) {
+//     require_once($class . '.php');
+// });
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
 use Psr\Http\Message\ResponseInterface;
+use GuzzleHttp\Exception\GuzzleException;
 
 require_once 'utils.php';
 
-require 'vendor/autoload.php';
+// require 'vendor/autoload.php';
 
 class IdApi
 {
@@ -70,19 +72,19 @@ class IdApi
         $job_type = intval($partner_params["job_type"]);
 
         validateIdParams($id_info, $job_type);
-        validateJobTypes(array(JobType::ENHANCED_KYC), $job_type);
+        validateJobTypes([JobType::ENHANCED_KYC], $job_type);
 
         $user_async = array_value_by_key("user_async", $options);
         $signature_params = $this->sig_class->generate_signature();
 
-        $data = array(
+        $data = [
             'language' => 'php',
             'callback_url' => $this->default_callback,
             'partner_params' => $partner_params,
             'partner_id' => $this->partner_id,
             'source_sdk' => Config::SDK_CLIENT,
             'source_sdk_version' => Config::VERSION
-        );
+        ];
         $data = array_merge($data, $id_info, $signature_params);
         $json_data = json_encode($data, JSON_PRETTY_PRINT);
         $url = $user_async ? 'async_id_verification' : 'id_verification';

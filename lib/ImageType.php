@@ -1,5 +1,7 @@
 <?php
 
+namespace SmileIdentity;
+
 class ImageType
 {
     // Selfie image in a file format

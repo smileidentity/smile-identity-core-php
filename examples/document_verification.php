@@ -1,8 +1,12 @@
 <?php
 
+use SmileIdentity\JobType;
+use SmileIdentity\ImageType;
+use SmileIdentity\SmileIdentityCore;
+
 // Autoload the dependencies
 require 'vendor/autoload.php';
-include 'SmileIdentityCore.php';
+// include 'SmileIdentityCore.php';
 
 // See https://docs.smileidentity.com/server-to-server/php/products/document-verification for
 // how to setup and retrieve configuation values for the SmileIdentityCore class.
