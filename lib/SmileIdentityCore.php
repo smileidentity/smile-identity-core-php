@@ -99,6 +99,7 @@ class SmileIdentityCore
             JobType::DOCUMENT_VERIFICATION,
             JobType::ENHANCED_DOCUMENT_VERIFICATION,
             JobType::SMART_SELFIE_AUTHENTICATION,
+            JobType::SMART_SELFIE_REGISTRATION,
         ), $job_type);
 
         if ($job_type === JobType::BUSINESS_VERIFICATION) {

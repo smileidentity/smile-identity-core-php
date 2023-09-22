@@ -635,6 +635,7 @@ final class SmileIdentityCoreTest extends TestCase
             JobType::DOCUMENT_VERIFICATION,
             JobType::ENHANCED_DOCUMENT_VERIFICATION,
             JobType::SMART_SELFIE_AUTHENTICATION,
+            JobType::SMART_SELFIE_REGISTRATION,
         ));
         $this->expectException(Exception::class);
         $this->expectExceptionMessage("job_type must be one of $expected_values");
