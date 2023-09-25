@@ -5,7 +5,6 @@ use SmileIdentity\SmileIdentityCore;
 
 // Autoload the dependencies
 require 'vendor/autoload.php';
-// include 'SmileIdentityCore.php';
 
 // See https://docs.smileidentity.com/products/for-businesses-kyb/business-verification for
 // more information on business verification
