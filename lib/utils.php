@@ -1,5 +1,6 @@
 <?php
 
+// use Exception;
 use SmileIdentity\JobType;
 use SmileIdentity\BusinessVerificationType;
 

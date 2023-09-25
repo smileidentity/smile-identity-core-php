@@ -1,9 +1,6 @@
 <?php
 
 namespace SmileIdentity;
-// spl_autoload_register(function ($class) {
-//     require_once($class . '.php');
-// });
 
 use DateTimeInterface;
 use Ouzo\Utilities\Clock;

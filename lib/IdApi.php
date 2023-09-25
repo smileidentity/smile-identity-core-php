@@ -2,13 +2,12 @@
 
 namespace SmileIdentity;
 
+use Exception;
 use GuzzleHttp\Client;
 use Psr\Http\Message\ResponseInterface;
 use GuzzleHttp\Exception\GuzzleException;
 
 require_once 'utils.php';
-
-// require 'vendor/autoload.php';
 
 class IdApi
 {

@@ -6,7 +6,6 @@ use SmileIdentity\SmileIdentityCore;
 
 // Autoload the dependencies
 require 'vendor/autoload.php';
-// include 'SmileIdentityCore.php';
 
 // See https://docs.smileidentity.com/server-to-server/php/products/biometric-kyc for
 // how to setup and retrieve configuation values for the SmileIdentityCore class.
