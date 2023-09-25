@@ -1,8 +1,6 @@
 <?php
 declare(strict_types=1);
 
-// require 'lib/SmileIdentityCore.php';
-
 use GuzzleHttp\Client;
 use Ouzo\Utilities\Clock;
 use SmileIdentity\Config;
