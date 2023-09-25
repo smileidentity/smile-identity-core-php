@@ -1,8 +1,10 @@
 <?php
 
+use SmileIdentity\IdApi;
+use SmileIdentity\JobType;
+
 // Autoload the dependencies
 require 'vendor/autoload.php';
-include 'IdApi.php';
 
 // See https://docs.smileidentity.com/server-to-server/php/products/enhanced-kyc for
 // how to setup and retrieve configuation values for the IdApi class.

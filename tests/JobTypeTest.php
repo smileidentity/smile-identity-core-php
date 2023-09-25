@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 
+use SmileIdentity\JobType;
 use PHPUnit\Framework\TestCase;
 
 final class JobTypeTest extends TestCase

@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
+use SmileIdentity\BusinessVerificationType;
 
 final class BusinessVerificationTypeTest extends TestCase
 {

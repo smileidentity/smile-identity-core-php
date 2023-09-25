@@ -1,5 +1,7 @@
 <?php
 
+namespace SmileIdentity;
+
 class BusinessVerificationType
 {
     // Search basic business registration information
@@ -11,5 +13,9 @@ class BusinessVerificationType
     // Search Tax information
     const TAX_INFORMATION = "TAX_INFORMATION";
 
-    const ALL = array(self::BASIC_BUSINESS_REGISTRATION, self::BUSINESS_REGISTRATION, self::TAX_INFORMATION);
+    const ALL = [
+        self::BASIC_BUSINESS_REGISTRATION,
+        self::BUSINESS_REGISTRATION, 
+        self::TAX_INFORMATION
+    ];
 }
