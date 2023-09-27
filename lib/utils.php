@@ -46,13 +46,15 @@ function validateIdParams($id_params, $job_type)
         throw new Exception("Please ensure that you send through partner params");
     }
 
-    $not_doc_or_biz_verification = !in_array($job_type, array(JobType::DOCUMENT_VERIFICATION, JobType::BUSINESS_VERIFICATION));
+    $not_doc_or_biz_verification = !in_array($job_type, array(JobType::DOCUMENT_VERIFICATION, JobType::ENHANCED_DOCUMENT_VERIFICATION, JobType::BUSINESS_VERIFICATION));
     if ($not_doc_or_biz_verification && (!key_exists("entered", $id_params) || strtolower("{$id_params['entered']}") !== "true")) {
         return;
     }
 
     if ($job_type == JobType::DOCUMENT_VERIFICATION) {
         $required_fields = ["country"];
+    } else if ($job_type == JobType::ENHANCED_DOCUMENT_VERIFICATION) {
+        $required_fields = ["country", "id_type"];
     } else {
         $required_fields = ["country", "id_number", "id_type"];
     }
@@ -98,10 +100,12 @@ function validateImageParams($image_details, $job_type, $use_enrolled_image)
             $has_selfie = true;
         }
     }
-    if ($job_type == JobType::DOCUMENT_VERIFICATION && !$has_id_image){
-        throw new Exception('You are attempting to complete a job type 6 without providing an id card image');
+
+    $is_docv_job = $job_type == JobType::DOCUMENT_VERIFICATION || $job_type == JobType::ENHANCED_DOCUMENT_VERIFICATION;
+    if ($is_docv_job && !$has_id_image){
+        throw new Exception("You are attempting to complete a job type $job_type without providing an id card image");
     }
-    if (!($has_selfie || ($job_type == JobType::DOCUMENT_VERIFICATION && $use_enrolled_image))) {
+    if (!($has_selfie || ($is_docv_job && $use_enrolled_image))) {
         throw new Exception('You need to send through at least one selfie image');
     }
 }
