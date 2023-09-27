@@ -1,5 +1,9 @@
 <?php
 
+// use Exception;
+use SmileIdentity\JobType;
+use SmileIdentity\BusinessVerificationType;
+
 function endsWith($haystack, $needle)
 {
     $length = strlen($needle);
@@ -135,7 +139,11 @@ function validateJobTypes($expected_types, $job_type)
 {
     if (!in_array($job_type, $expected_types)) {
         $expected_values = implode(", ", $expected_types);
-        throw new InvalidArgumentException("job_type must be one of $expected_values");
+        if(count($expected_types) > 1){
+            throw new InvalidArgumentException("job_type must be one of $expected_values");
+        }
+
+        throw new InvalidArgumentException("job_type must be $expected_values");
     }
 }
 

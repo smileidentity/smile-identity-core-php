@@ -1,25 +1,26 @@
 <?php
-spl_autoload_register(function ($class) {
-    require_once($class . '.php');
-});
+
+namespace SmileIdentity;
 
 require_once 'utils.php';
 
+use Exception;
+use ZipArchive;
+use DateTimeInterface;
 use GuzzleHttp\Client;
-use GuzzleHttp\Psr7;
-use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Exception\RequestException;
 use Ouzo\Utilities\Clock;
+use GuzzleHttp\Psr7\Utils;
+use GuzzleHttp\Exception\RequestException;
 
 const DEFAULT_JOB_STATUS_SLEEP = 2;
-const default_options = array(
+const default_options = [
     'optional_callback' => '',
     'return_job_status' => false,
     'return_history' => false,
     'return_image_links' => false,
     'signature' => false,
     'user_async' => false,
-);
+];
 
 class SmileIdentityCore
 {
@@ -132,7 +133,7 @@ class SmileIdentityCore
         if ($options['return_job_status']) {
             $result = $this->poll_job_status($partner_params, $options);
         } else {
-            $result = array('success' => true, "smile_job_id" => $smile_job_id);
+            $result = ['success' => true, "smile_job_id" => $smile_job_id];
         }
         return $result;
     }
@@ -149,7 +150,7 @@ class SmileIdentityCore
     {
         $signature_params = $this->sig_class->generate_signature();
 
-        $data = array(
+        $data = [
             'user_id' => $partner_params['user_id'],
             'job_id' => $partner_params['job_id'],
             'partner_id' => $this->partner_id,
@@ -157,7 +158,7 @@ class SmileIdentityCore
             'history' => $options['return_history'],
             'source_sdk' => Config::SDK_CLIENT,
             'source_sdk_version' => Config::VERSION
-        );
+        ];
         $data = array_merge($data, $signature_params);
 
         $json_data = json_encode($data, JSON_PRETTY_PRINT);
@@ -232,7 +233,7 @@ class SmileIdentityCore
         $timestamp = $timestamp != null ? $timestamp : Clock::now()->getTimestamp();;
         $signature = $this->sig_class->generate_signature(date(DateTimeInterface::ATOM, $timestamp));
         
-        $data = array(
+        $data = [
             'timestamp' => $signature["timestamp"],
             'callback_url' => $callback_url != null ? $callback_url : $this->default_callback,
             'partner_id' => $this->partner_id,
@@ -242,7 +243,7 @@ class SmileIdentityCore
             'signature' => $signature["signature"],
             'source_sdk' => Config::SDK_CLIENT,
             'source_sdk_version' => Config::VERSION
-        );
+        ];
 
         $json_data = json_encode($data, JSON_PRETTY_PRINT);
 
@@ -264,22 +265,22 @@ class SmileIdentityCore
 
     private function configure_image_payload($image_details): array
     {
-        $images_json = array();
+        $images_json = [];
         foreach ($image_details as $image) {
             if (endsWith($image["image"], '.png')
                 || endsWith($image["image"], '.jpg')
                 || endsWith($image["image"], '.jpeg')) {
-                array_push($images_json, array(
+                array_push($images_json, [
                     "image_type_id" => $image["image_type_id"],
                     "image" => "",
                     "file_name" => basename($image["image"]),
-                ));
+                ]);
             } else {
-                array_push($images_json, array(
+                array_push($images_json, [
                     "image_type_id" => $image["image_type_id"],
                     "file_name" => "",
                     "image" => $image["image"],
-                ));
+                ]);
             }
         }
         return $images_json;
@@ -297,7 +298,7 @@ class SmileIdentityCore
         $callback = $options['optional_callback'];
         $job_type = $partner_params['job_type'];
 
-        $data = array(
+        $data = [
             'callback_url' => $callback,
             'file_name' => 'selfie.zip',
             'model_parameters' => '',
@@ -305,11 +306,11 @@ class SmileIdentityCore
             'smile_client_id' => $this->partner_id,
             'source_sdk' => Config::SDK_CLIENT,
             'source_sdk_version' => Config::VERSION
-        );
+        ];
 
         $data = array_merge($signature_params, $data);
         if ($job_type == 6 && key_exists('use_enrolled_image', $options)) {
-            $data = array_merge($data, array('use_enrolled_image' => $options['use_enrolled_image']));
+            $data = array_merge($data, ['use_enrolled_image' => $options['use_enrolled_image']]);
         }
 
         $json_data = json_encode($data, JSON_PRETTY_PRINT);
@@ -337,7 +338,7 @@ class SmileIdentityCore
      */
     private function upload_file($upload_url, $filename)
     {
-        $body = Psr7\Utils::tryFopen($filename, 'r');
+        $body = Utils::tryFopen($filename, 'r');
         $resp = $this->getClient()->request('PUT', $upload_url, ['body' => $body, 'headers' => [
             'Content-Type' => 'application/zip',
         ]]);
@@ -360,13 +361,13 @@ class SmileIdentityCore
     private function configure_info_json($prep_upload_response_array, $id_info, $images, $partner_params, $signature_params, $options)
     {
         $callback = $options['optional_callback'];
-        $misc = array(
+        $misc = [
             "retry" => "false",
             "partner_params" => $partner_params,
             "file_name" => "selfie.zip",
             "smile_client_id" => $this->partner_id,
             "callback_url" => $callback,
-            "userData" => array(
+            "userData" => [
                 "isVerifiedProcess" => false,
                 "name" => "",
                 "fbUserID" => "",
@@ -377,24 +378,24 @@ class SmileIdentityCore
                 "phone" => "",
                 "countryCode" => "+",
                 "countryName" => ""
-            )
-        );
+            ]
+            ];
         $misc = array_merge($misc, $signature_params);
 
-        return array(
-            "package_information" => array(
-                "apiVersion" => array(
+        return [
+            "package_information" => [
+                "apiVersion" => [
                     "buildNumber" => 0,
                     "majorVersion" => 2,
                     "minorVersion" => 0
-                ),
+                ],
                 "language" => "php"
-            ),
+            ],
             "misc_information" => $misc,
             "id_info" => $id_info,
             "images" => $this->configure_image_payload($images),
             "server_information" => $prep_upload_response_array
-        );
+        ];
     }
 
     /**
@@ -445,12 +446,12 @@ class SmileIdentityCore
     private function submit_kyb_job($partner_params, $id_info)
     {
         $signature_params = $this->sig_class->generate_signature();
-        $data = array(
+        $data = [
             'partner_params' => $partner_params,
             'partner_id' => $this->partner_id,
             'source_sdk' => Config::SDK_CLIENT,
             'source_sdk_version' => Config::VERSION
-        );
+        ];
         $data = array_merge($data, $id_info, $signature_params);
         $json_data = json_encode($data, JSON_PRETTY_PRINT);
 

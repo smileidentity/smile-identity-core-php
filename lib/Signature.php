@@ -1,8 +1,8 @@
 <?php
-spl_autoload_register(function ($class) {
-    require_once($class . '.php');
-});
 
+namespace SmileIdentity;
+
+use DateTimeInterface;
 use Ouzo\Utilities\Clock;
 
 class Signature
@@ -33,7 +33,7 @@ class Signature
         $timestamp = $timestamp != null ? $timestamp : Clock::now()->format(DateTimeInterface::ATOM);
         $message = $timestamp . $this->partner_id . "sid_request";
         $signature = base64_encode(hash_hmac('sha256', $message, $this->api_key, true));
-        return array("signature" => $signature, "timestamp" => $timestamp);
+        return ["signature" => $signature, "timestamp" => $timestamp];
     }
 
     /**

@@ -1,15 +1,16 @@
 <?php
 declare(strict_types=1);
 
-require 'lib/IdApi.php';
-
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Psr7\Response;
+use SmileIdentity\IdApi;
 use Ouzo\Utilities\Clock;
+use SmileIdentity\JobType;
+use GuzzleHttp\HandlerStack;
+use SmileIdentity\Signature;
+use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\Exception\GuzzleException;
 
 final class IdApiTest extends TestCase
 {
@@ -92,7 +93,7 @@ final class IdApiTest extends TestCase
     {
         $expected_values = implode(", ", array(JobType::ENHANCED_KYC));
         $this->expectException(Exception::class);
-        $this->expectExceptionMessage("job_type must be one of $expected_values");
+        $this->expectExceptionMessage("job_type must be $expected_values");
         
         $api_key = file_get_contents(__DIR__ . "/assets/ApiKey.pub");
         $id_api = new IdApi(001, "https://callback.smileidentity.com", $api_key, 0);
