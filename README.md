@@ -2,7 +2,7 @@
 
 Smile Identity provides the best solutions for real time Digital KYC, identity verification, user onboarding, and user authentication across Africa. Our server side libraries make it easy to integrate us on the server-side. Since the library is server-side, you will be required to pass the images (if required) to the library.
 
-If you haven’t already, [sign up for a free Smile Identity account](https://www.smileidentity.com/schedule-a-demo/), which comes with Sandbox access.
+If you haven’t already, [sign up for a free Smile Identity account](https://usesmileid.com/talk-to-an-expert), which comes with Sandbox access.
 
 Please see [CHANGELOG.md](CHANGELOG.md) for release versions and changes.
 
@@ -12,12 +12,12 @@ The library exposes four classes namely; the WebApi class, the IDApi class, the 
 
 The WebApi class has the following public methods:
 
-- `submit_job` - handles submission of any of Smile Identity products that requires an image i.e. [Biometric KYC](https://docs.smileidentity.com/products/biometric-kyc), [Document Verification](https://docs.smileidentity.com/products/document-verification), [SmartSelfieTM Authentication](https://docs.smileidentity.com/products/biometric-authentication) and [Business Verification](https://docs.smileidentity.com/products/for-businesses-kyb/business-verification).
-- `get_web_token` - handles generation of web token, if you are using the [Hosted Web Integration](https://docs.smileidentity.com/web-mobile-web/web-integration-beta).
+- `submit_job` - handles submission of any of Smile Identity products that requires an image i.e. [Biometric KYC](https://docs.usesmileid.com/products/biometric-kyc), [Document Verification](https://docs.usesmileid.com/products/document-verification), [SmartSelfieTM Authentication](https://docs.usesmileid.com/products/biometric-authentication) and [Business Verification](https://docs.usesmileid.com/products/for-businesses-kyb/business-verification).
+- `get_web_token` - handles generation of web token, if you are using the [Hosted Web Integration](https://docs.usesmileid.com/web-mobile-web/web-integration-beta).
 
 The IDApi class has the following public method:
 
-- `submit_job` - handles submission of [Enhanced KYC](https://docs.smileidentity.com/products/identity-lookup) and [Basic KYC](https://docs.smileidentity.com/products/id-verification).
+- `submit_job` - handles submission of [Enhanced KYC](https://docs.usesmileid.com/products/identity-lookup) and [Basic KYC](https://docs.usesmileid.com/products/id-verification).
 
 The Signature class has the following public methods:
 
@@ -26,7 +26,7 @@ The Signature class has the following public methods:
 
 The Utilities Class allows you as the Partner to have access to our general Utility functions to gain access to your data. It has the following public methods:
 
-- `get_job_status` - retrieve information & results of a job. Read more on job status in the [Smile Identity documentation](https://docs.smileidentity.com/further-reading/job-status).
+- `get_job_status` - retrieve information & results of a job. Read more on job status in the [Smile Identity documentation](https://docs.usesmileid.com/further-reading/job-status).
 - `get_smile_id_services` - general information about different smile identity products such as required inputs for each supported id type.
 
 ## Dependencies
@@ -42,7 +42,7 @@ The Utilities Class allows you as the Partner to have access to our general Util
 
 ## Documentation
 
-For extensive instructions on usage of the library and sample codes, please refer to the [official Smile Identity documentation](https://docs.smileidentity.com/server-to-server/php).
+For extensive instructions on usage of the library and sample codes, please refer to the [official Smile Identity documentation](https://docs.usesmileid.com/server-to-server/php).
 
 Before that, you should take a look at the examples in the [examples](/examples) folder.
 
@@ -68,7 +68,7 @@ composer require smile-identity/smile-identity-core
 
 ## Getting Help
 
-For usage questions, the best resource is [our official documentation](https://docs.smileidentity.com/). However, if you require further assistance, you can file a [support ticket via our portal](https://portal.smileidentity.com/partner/support/tickets) or visit the [contact us page](https://www.smileidentity.com/contact-us/) on our website.
+For usage questions, the best resource is [our official documentation](https://docs.usesmileid.com/). However, if you require further assistance, you can file a [support ticket via our portal](https://portal.usesmileid.com/partner/support/tickets) or visit the [contact us page](https://www.usesmileid.com/contact-us/) on our website.
 
 ## Contributing
 
