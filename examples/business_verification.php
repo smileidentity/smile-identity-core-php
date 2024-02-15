@@ -6,7 +6,7 @@ use SmileIdentity\SmileIdentityCore;
 // Autoload the dependencies
 require 'vendor/autoload.php';
 
-// See https://docs.smileidentity.com/products/for-businesses-kyb/business-verification for
+// See https://docs.usesmileid.com/products/for-businesses-kyb/business-verification for
 // more information on business verification
 
 $partner_id = '<Put your partner ID here>';
