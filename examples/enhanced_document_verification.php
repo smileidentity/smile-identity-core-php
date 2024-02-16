@@ -7,7 +7,7 @@ use SmileIdentity\SmileIdentityCore;
 // Autoload the dependencies
 require 'vendor/autoload.php';
 
-// See https://docs.smileidentity.com/server-to-server/php/products/document-verification for
+// See https://docs.usesmileid.com/server-to-server/php/products/document-verification for
 // how to setup and retrieve configuation values for the SmileIdentityCore class.
 
 $partner_id = '<Put your partner ID here>';
