@@ -30,8 +30,8 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          EXISTING=$(gh issue list --label "security-audit" --state open --json number --jq 'length')
-          if [ "$EXISTING" -gt 0 ]; then exit 0; fi
+          EXISTING=$(gh issue list --label "security-audit" --state open --json number --jq 'length' || echo "0")
+          if [ "${EXISTING:-0}" -gt 0 ]; then exit 0; fi
           TITLE_DATE=$(date +%Y-%m-%d)
           gh issue create \
             --title "Security: PHP dependency vulnerabilities detected (${TITLE_DATE})" \
