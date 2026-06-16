@@ -37,4 +37,12 @@ final class SignatureTest extends TestCase
         $confirm_signature = $this->sig->confirm_signature($timestamp, $signature);
         $this->assertTrue($confirm_signature);
     }
+
+    public function testRejectInvalidSignature()
+    {
+        $timestamp = Clock::now()->format(DateTimeInterface::ATOM);
+        $fake_signature = base64_encode(random_bytes(32));
+        $confirm_signature = $this->sig->confirm_signature($timestamp, $fake_signature);
+        $this->assertFalse($confirm_signature);
+    }
 }
