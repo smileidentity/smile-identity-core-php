@@ -44,7 +44,8 @@ class Signature
      */
     function confirm_signature($timestamp, string $signature): bool
     {
-        return $signature === $this->generate_signature($timestamp)["signature"];
+        $expected = $this->generate_signature($timestamp)["signature"];
+        return hash_equals($expected, $signature);
     }
 
     /**
