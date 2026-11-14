@@ -10,6 +10,7 @@ use DateTimeInterface;
 use GuzzleHttp\Client;
 use Ouzo\Utilities\Clock;
 use GuzzleHttp\Psr7\Utils;
+use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
 
 const DEFAULT_JOB_STATUS_SLEEP = 2;
@@ -473,9 +474,23 @@ class SmileIdentityCore
      */
     private function poll_job_status($partner_params, array $options): array
     {
+        $wait = DEFAULT_JOB_STATUS_SLEEP;
         for ($i = 1; $i <= 20; $i += 1) {
-            sleep(DEFAULT_JOB_STATUS_SLEEP);
-            $result = $this->query_job_status($partner_params, $options);
+            sleep($wait);
+            $wait = DEFAULT_JOB_STATUS_SLEEP;
+            try {
+                $result = $this->query_job_status($partner_params, $options);
+            } catch (ClientException $e) {
+                if ($e->getResponse()->getStatusCode() != 429 || $i == 20) {
+                    throw $e;
+                }
+                // Honour Retry-After only when it is whole seconds, capped at 60.
+                $retry_after = $e->getResponse()->getHeaderLine('Retry-After');
+                if (preg_match('/\A\d+\z/', $retry_after)) {
+                    $wait = max(DEFAULT_JOB_STATUS_SLEEP, min((int)$retry_after, 60));
+                }
+                continue;
+            }
             if ($result['job_complete'] == true) {
                 $result['success'] = true;
                 break;
