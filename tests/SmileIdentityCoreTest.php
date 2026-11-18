@@ -13,6 +13,10 @@ use GuzzleHttp\Handler\MockHandler;
 use SmileIdentity\SmileIdentityCore;
 use GuzzleHttp\Exception\GuzzleException;
 use SmileIdentity\BusinessVerificationType;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ServerException;
+
+require_once __DIR__ . '/sleep_stub.php';
 
 final class SmileIdentityCoreTest extends TestCase
 {
@@ -31,6 +35,7 @@ final class SmileIdentityCoreTest extends TestCase
     protected function setUp(): void
     {
         Clock::freeze('2011-01-02 12:34');
+        $GLOBALS['smile_identity_sleeps'] = [];
         $default_callback = 'https://google.com';
         $api_key = file_get_contents(__DIR__ . "/assets/ApiKey.pub");
         $this->sic = new SmileIdentityCore($this->partner_id, $default_callback, $api_key, $this->sid_server);
@@ -685,6 +690,121 @@ final class SmileIdentityCoreTest extends TestCase
         );
 
         $sid_core->submit_job($partner_params, [], $id_info, []);
+    }
+
+    public function retryAfterProvider(): array
+    {
+        return [
+            'missing' => [[], 2],
+            'whole seconds' => [['Retry-After' => '5'], 5],
+            'shorter than the usual interval' => [['Retry-After' => '1'], 2],
+            'capped at 60 seconds' => [['Retry-After' => '120'], 60],
+            'HTTP-date' => [['Retry-After' => 'Wed, 21 Oct 2015 07:28:00 GMT'], 2],
+            'fractional' => [['Retry-After' => '1.5'], 2],
+            'negative' => [['Retry-After' => '-3'], 2],
+        ];
+    }
+
+    /**
+     * @dataProvider retryAfterProvider
+     * @throws GuzzleException
+     */
+    public function testSubmitJobKeepsPollingAfterTooManyRequests(array $headers, int $expectedWait): void
+    {
+        $getStatusResult = $this->jobStatusBody();
+        $mock = new MockHandler([
+            new Response(200, [], json_encode($this->preUploadBody())),
+            new Response(200, []),
+            new Response(429, $headers),
+            new Response(200, [], $getStatusResult)
+        ]);
+        $this->sic->setClient(new Client(['handler' => HandlerStack::create($mock)]));
+
+        $result = $this->sic->submit_job($this->partnerParams, $this->imageDetails, $this->idParams, $this->options);
+
+        $this->assertEquals(array_merge(json_decode($getStatusResult, true), ["success" => true]), $result);
+        $this->assertEquals([2, $expectedWait], $GLOBALS['smile_identity_sleeps']);
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    public function testSubmitJobRaisesTooManyRequestsOnTheLastPoll(): void
+    {
+        $responses = [
+            new Response(200, [], json_encode($this->preUploadBody())),
+            new Response(200, []),
+        ];
+        for ($i = 0; $i < 20; $i++) {
+            $responses[] = new Response(429);
+        }
+        $mock = new MockHandler($responses);
+        $this->sic->setClient(new Client(['handler' => HandlerStack::create($mock)]));
+
+        try {
+            $this->sic->submit_job($this->partnerParams, $this->imageDetails, $this->idParams, $this->options);
+            $this->fail('Expected a ClientException');
+        } catch (ClientException $e) {
+            $this->assertEquals(429, $e->getResponse()->getStatusCode());
+        }
+        $this->assertCount(20, $GLOBALS['smile_identity_sleeps']);
+        $this->assertEquals(0, $mock->count());
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    public function testSubmitJobStillRaisesServerErrorsWhilePolling(): void
+    {
+        $mock = new MockHandler([
+            new Response(200, [], json_encode($this->preUploadBody())),
+            new Response(200, []),
+            new Response(503),
+            new Response(200, [], $this->jobStatusBody())
+        ]);
+        $this->sic->setClient(new Client(['handler' => HandlerStack::create($mock)]));
+
+        $this->expectException(ServerException::class);
+        $this->sic->submit_job($this->partnerParams, $this->imageDetails, $this->idParams, $this->options);
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    public function testGetJobStatusStillRaisesTooManyRequests(): void
+    {
+        $mock = new MockHandler([
+            new Response(429, ['Retry-After' => '5']),
+            new Response(200, [], $this->jobStatusBody())
+        ]);
+        $this->sic->setClient(new Client(['handler' => HandlerStack::create($mock)]));
+        $options = ["return_image_links" => false, "return_history" => false];
+
+        try {
+            $this->sic->get_job_status($this->partnerParams, $options);
+            $this->fail('Expected a ClientException');
+        } catch (ClientException $e) {
+            $this->assertEquals(429, $e->getResponse()->getStatusCode());
+        }
+        $this->assertEquals([], $GLOBALS['smile_identity_sleeps']);
+        $this->assertEquals(1, $mock->count());
+    }
+
+    private function preUploadBody(): array
+    {
+        return [
+            "upload_url" => "https://upload-url.com",
+            "ref_id" => "212-0000058873-dwhsn9nsax3onnbf8mc1rifirl44z",
+            "smile_job_id" => "0000058873",
+            "camera_config" => null,
+            "code" => 2202
+        ];
+    }
+
+    private function jobStatusBody(): string
+    {
+        $signatureKey = $this->sic->generate_signature();
+        return '{"timestamp": "' . $signatureKey['timestamp'] . '", "signature": "' . $signatureKey['signature'] . '", "job_complete": true, "job_success": false, "code": "2302", "result": {}, "history": [], "image_links": {"selfie_image": "https://selfie-image.com"}}';
     }
 
     private function getMockClient()
