@@ -14,7 +14,7 @@ jobs:
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
     - name: Set up PHP ${{ matrix.php-version }}
-      uses: shivammathur/setup-php@856a08ae411fe40fc2b1b13c123dd9dcec28d0ca # v2
+      uses: shivammathur/setup-php@e8d43d139fbfbe401c32ef3a3a32e14075f20122 # v2
       with:
         php-version: ${{ matrix.php-version }}
     - name: Get composer cache directory
