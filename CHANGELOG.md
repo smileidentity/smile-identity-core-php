@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Fixed
+- `submit_job` with `return_job_status` no longer stops when a job status poll gets HTTP 429. It keeps polling within its 20 polls, waiting for `Retry-After` when that is whole seconds (up to 60) or the usual 2 seconds, whichever is longer. A 429 on the last poll is still raised.
 
 ## [4.0.3] - 2023-09-27
 ### Changed
